@@ -1916,12 +1916,14 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // small changes are noise: under 5% (or under 1 point for shares) reads as flat, so '+0%' and '-0 pts' never show
     var d = cur - prev, pts = d * (o.scale || 1), rel = prev ? d / Math.abs(prev) : (d ? Infinity : 0);
     var flat = o.points ? Math.abs(pts) < 1 : Math.abs(rel) < 0.05;
-    if (flat || (o.minAbs && Math.abs(d) < o.minAbs)) return { text: '→ about the same as before', cls: 'flat' };
+    // the earlier number, right on the tile (11/24, Skylar: "24% less than before ... I don't know what that means"):
+    // "▼ 24% fewer · was 826 in the 30 days before". o.fmt formats the earlier value; o.before names the period.
+    var was = ' · was ' + (o.fmt ? o.fmt(prev) : F().num(prev)) + (o.before ? ' in ' + o.before : ' before');
+    if (flat || (o.minAbs && Math.abs(d) < o.minAbs)) return { text: '→ about the same' + was, cls: 'flat' };
     var up = d > 0, good = o.goodUp === false ? !up : up;
-    // plain words (11/24): "▲ 24% more than before", "▼ 7 points lower than before"
-    var txt = !isFinite(rel) ? 'up from none before' : o.points ? Math.round(Math.abs(pts)) + ' points ' + (up ? 'higher' : 'lower') + ' than before'
-      : Math.round(Math.abs(rel) * 100) + '% ' + (up ? 'more' : 'less') + ' than before';
-    return { text: (up ? '▲ ' : '▼ ') + txt, cls: (up ? 'up-' : 'down-') + (good ? 'good' : 'bad') };
+    var txt = !isFinite(rel) ? 'up from none' : o.points ? Math.round(Math.abs(pts)) + ' points ' + (up ? 'higher' : 'lower')
+      : Math.round(Math.abs(rel) * 100) + '% ' + (up ? 'more' : o.fmt ? 'less' : 'fewer'); // counts are 'fewer', money and time are 'less'
+    return { text: (up ? '▲ ' : '▼ ') + txt + was, cls: (up ? 'up-' : 'down-') + (good ? 'good' : 'bad') };
   }
   // t.naSub: the caption to show instead of t.sub when t.na (pass '' to show none). Without it the sub stays.
   function tile(t) {
@@ -2304,7 +2306,10 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     }
 
     // ---- 1. the key numbers ----
-    var tr = ui.trend, rolling = H.retentionKind === 'rolling', noSess = H.sessionMedian == null;
+    var before = M.filters.range === 'all' ? '' : 'the ' + M.filters.range + ' days before';
+    var tr = function (cur, prev, o) { o = o || {}; o.before = before; return ui.trend(cur, prev, o); };
+    var asPct = function (v) { return f.pct(ok(v) ? v * 100 : null); };
+    var rolling = H.retentionKind === 'rolling', noSess = H.sessionMedian == null;
     var sub = function (txt, win) { return rep && win ? cap(win) + '. ' + txt : txt; };
     var ltv = H.ltv, goal = H.goal || 1;
     main.appendChild(h('h2', { class: 'eyebrow', text: rep ? 'Key numbers from the report' : 'Key numbers for ' + (/^last /.test(W.installs || '') ? 'the ' + W.installs : W.installs || range) }));
@@ -2313,18 +2318,18 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       { label: 'Players a day', value: f.num(H.dauAvg), sub: 'On average. ' + f.num(H.active) + ' different players in all.', trend: tr(H.dauAvg, P.dauAvg) },
       rolling
         ? { label: 'Came back after day 1', value: f.pct(ok(H.d1) ? H.d1 * 100 : null), sub: 'Of new players who played.' }
-        : { label: 'Came back the next day', value: f.pct(ok(H.d1) ? H.d1 * 100 : null), sub: 'Of new players who played.', trend: tr(H.d1, P.d1, { points: true, scale: 100 }) },
+        : { label: 'Came back the next day', value: f.pct(ok(H.d1) ? H.d1 * 100 : null), sub: 'Of new players who played.', trend: tr(H.d1, P.d1, { points: true, scale: 100, fmt: asPct }) },
       rolling
         ? { label: 'Still playing a week later', value: f.pct(ok(H.d7) ? H.d7 * 100 : null), sub: 'Played on day 7 or later.' }
-        : { label: 'Still playing a week later', value: f.pct(ok(H.d7) ? H.d7 * 100 : null), sub: 'Played on day 7.', trend: tr(H.d7, P.d7, { points: true, scale: 100 }) },
-      { label: rep ? 'Money earned, all time' : 'Money earned', value: f.money(H.revenue), sub: sub('Ads ' + f.money(H.revAds) + ' · purchases ' + f.money(H.revIap) + '.', W.revenue), trend: tr(H.revenue, P.revenue) },
+        : { label: 'Still playing a week later', value: f.pct(ok(H.d7) ? H.d7 * 100 : null), sub: 'Played on day 7.', trend: tr(H.d7, P.d7, { points: true, scale: 100, fmt: asPct }) },
+      { label: rep ? 'Money earned, all time' : 'Money earned', value: f.money(H.revenue), sub: sub('Ads ' + f.money(H.revAds) + ' · purchases ' + f.money(H.revIap) + '.', W.revenue), trend: tr(H.revenue, P.revenue, { fmt: f.money }) },
       { label: 'A new player is worth', value: ok(ltv) ? f.money(ltv) : '–', sub: ok(ltv) ? 'Goal ' + f.money(goal) + '. ' + Math.round(ltv * 100 / goal) + '% of the way there.' : 'Not enough data yet.' },
       { label: rep ? 'Buyers, all time' : 'Buyers', value: f.num(H.payers), sub: (ok(H.payerPct) ? pct1(H.payerPct) : '–') + ' of players bought something.', trend: tr(H.payers, P.payers) },
       rep
         ? { label: 'Typical session', na: noSess, value: f.minutes(H.sessionMedian), sub: 'Half of sessions are shorter.', naSub: 'HQ does not record session length yet.' }
-        : { label: 'Typical session', value: f.minutes(H.sessionMedian), sub: noSess ? 'No sessions in this period.' : 'Half of sessions are shorter.', trend: tr(H.sessionMedian, P.sessionMedian) }
+        : { label: 'Typical session', value: f.minutes(H.sessionMedian), sub: noSess ? 'No sessions in this period.' : 'Half of sessions are shorter.', trend: tr(H.sessionMedian, P.sessionMedian, { fmt: f.minutes }) }
     ].map(ui.tile)));
-    if (M.prev) main.appendChild(h('p', { class: 'howto', text: '"Before" means the same number of days just before these. Green arrows are good news, red are bad news.' }));
+    if (M.prev) main.appendChild(h('p', { class: 'howto', text: 'Each card compares with ' + before + '. Green arrows are good news, red are bad news.' }));
 
     // ---- 2. one picture per big question ----
     main.appendChild(h('h2', { class: 'eyebrow', style: { 'margin-top': '8px' }, text: 'At a glance' }));
@@ -3739,7 +3744,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       { label: 'Full-screen ads shown', value: f.num(ai), sub: 'Plus ' + f.num(ar) + ' ads players chose to watch' + (rep ? ', ' + span : '') + '.' },
       { label: 'Money from ads', value: f.money(A.revenue),
         sub: (rep ? cap(span) + '. ' + f.money(A.revenueLife) + ' since the game began.' : ok(H.revenue) && H.revenue > 0 ? f.pct(A.revenue * 100 / H.revenue) + ' of all money.' : '') + perK,
-        trend: rep || noAds ? null : ui.trend(A.revenue, P.revAds) },
+        trend: rep || noAds ? null : ui.trend(A.revenue, P.revAds, { fmt: f.money, before: /^\d+$/.test(String(M.filters.range)) ? 'the ' + M.filters.range + ' days before' : '' }) },
       { label: 'Game closed right after an ad', na: rep, value: haveQuit ? f.pct(qa) : '–',
         sub: haveQuit ? 'Compared with ' + f.pct(qb) + ' after a battle with no ad.' : 'No full-screen ads to count here.',
         naSub: 'The game sends it. The server does not add it up yet.' },
@@ -4064,7 +4069,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     function aboutDays(v) { return v == null ? '–' : 'about ' + plural(Math.max(1, Math.round(v)), 'day', 'days'); }
     var before = /^\d+$/.test(String(M.filters.range)) ? 'the ' + M.filters.range + ' days before' : 'the time before';
     // the shared trend arrow, with plain words for its tail
-    function tr(cur, prev, o) { var t = ui.trend(cur, prev, o); if (!t) return null; return { cls: t.cls, text: t.text.replace(/ pts\b/, ' points').replace('vs the period before', 'compared with ' + before).replace('as the period before', 'as ' + before) }; }
+    function tr(cur, prev, o) { o = o || {}; o.before = before; return ui.trend(cur, prev, o); }
     var wideLtv = !isRep && L.windowDays && L.windowDays !== M.filters.days;
     var pctGoal = value != null ? Math.round(value * 100 / goal) : null;
 
@@ -4111,11 +4116,11 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // ---- 3. the key numbers ----
     main.appendChild(ui.kpis([
       { label: 'A new player is worth', value: value != null ? usd(value) : '–', sub: value != null ? 'Goal ' + usd(goal) + '. ' + (value >= goal ? 'Goal reached.' : pctGoal + '% of the way there.') : 'Not enough players yet.' },
-      { label: isRep ? 'Money earned so far' : 'Money earned', value: usd(total), sub: 'Ads and purchases, after the store\'s cut.', trend: tr(total, P.revenue) },
+      { label: isRep ? 'Money earned so far' : 'Money earned', value: usd(total), sub: 'Ads and purchases, after the store\'s cut.', trend: tr(total, P.revenue, { fmt: usd }) },
       { label: 'Buyers', na: Mo.payers == null, naSub: 'The game does not send this yet.', value: f.num(Mo.payers),
         sub: nz(Mo.arppu) != null ? 'They spent ' + usd(Mo.arppu) + ' each on average.' : 'Players who bought anything.', trend: tr(Mo.payers, P.payers) },
       { label: 'Players who buy', na: Mo.payerPct == null, naSub: 'The game does not send this yet.', value: f.pct(Mo.payerPct, 1),
-        sub: isRep ? 'Of the ' + f.num(M.headline && M.headline.payerBase) + ' players who ever played.' : 'Of players who played ' + inRange + '.', trend: tr(Mo.payerPct, P.payerPct, { points: true }) }
+        sub: isRep ? 'Of the ' + f.num(M.headline && M.headline.payerBase) + ' players who ever played.' : 'Of players who played ' + inRange + '.', trend: tr(Mo.payerPct, P.payerPct, { points: true, fmt: function (v) { return f.pct(v); } }) }
     ]));
 
     // ---- 4. what a new player is worth ----
@@ -4280,8 +4285,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       c.body.appendChild(ui.donut({ parts: [{ label: 'Purchases', v: iapMoney, color: C_IAP, note: plural(nBuys, 'purchase', 'purchases') }, { label: 'Ads', v: adsMoney, color: C_ADS }],
         center: usd(total), centerSub: isRep ? 'so far' : 'earned', fmt: usd, label: 'Money from ads and purchases' }));
       c.body.appendChild(h('div', { class: 'tiles', style: { 'margin-top': '16px', 'grid-template-columns': 'repeat(auto-fit, minmax(min(100%, 150px), 1fr))' } },
-        ui.tile({ label: 'From purchases', value: usd(iapMoney), sub: plural(nBuys, 'purchase', 'purchases') + '.', trend: tr(iapMoney, P.revIap) }),
-        ui.tile({ label: 'From ads', value: usd(adsMoney), sub: Math.round((1 - iapShare) * 100) + '% of all money.', trend: tr(adsMoney, P.revAds) })));
+        ui.tile({ label: 'From purchases', value: usd(iapMoney), sub: plural(nBuys, 'purchase', 'purchases') + '.', trend: tr(iapMoney, P.revIap, { fmt: usd }) }),
+        ui.tile({ label: 'From ads', value: usd(adsMoney), sub: Math.round((1 - iapShare) * 100) + '% of all money.', trend: tr(adsMoney, P.revAds, { fmt: usd }) })));
       var few = nBuys > 0 && nBuys < 10 && iapShare > 0.5;
       c.appendChild(h('div', { class: 'means', html: (iapShare >= 0.5 ? '<b>Purchases bring in ' + ofMoney(iapShare * 100) + '.</b> ' : '<b>Ads bring in ' + ofMoney((1 - iapShare) * 100) + '.</b> ') +
         (few ? 'Just ' + plural(nBuys, 'purchase', 'purchases') + ' carry it, so one more or one fewer moves every number on this page.'
