@@ -353,6 +353,22 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
 .fold[open] > summary::before { content: "▾ "; }
 .fold > .card { border: 0; padding: 12px 0 0; }
 
+/* Real data page (11/24) */
+.hq-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 10px 0 6px; font-size: var(--fs-md); }
+.hq-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.hq-in { flex: 1 1 320px; min-width: 0; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); padding: 8px 12px; font: 500 var(--fs-sm)/1.3 var(--mono); min-height: 38px; }
+.hq-check { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: var(--fs-sm); color: var(--ink-2); cursor: pointer; }
+.ck { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.ck-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: var(--fs-md); }
+.ck-list h3 { font: 700 var(--fs-sm)/1.3 var(--body); margin-bottom: 6px; }
+.ck-list ul { margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-sm); }
+.ck-list.bad li::marker { color: var(--crit); }
+.ck-list li small { display: block; color: var(--muted); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.ck-pages { list-style: none; padding: 0 !important; }
+.ck-pages li { display: grid; grid-template-columns: 7.5rem 9rem minmax(0, 1fr); gap: 4px 10px; align-items: baseline; }
+.ck-pages li span { color: var(--ink-2); }
+@media (max-width: 560px) { .ck-pages li { grid-template-columns: 7.5rem minmax(0, 1fr); } .ck-pages li span { grid-column: 2; } }
+
 </style>
 </head><body>
 <div id="app"><p style="padding:24px;font-family:system-ui">Loading the War Room…</p></div>
@@ -1495,6 +1511,178 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     dateOf: dateOf, wallTop: wallTop, survival: survival, COVERAGE: COVERAGE };
 })();
 
+/* ---- check.js ---- */
+/* GVT War Room · check.js — the export checker (11/24).
+   GVT.check.run(obj) reads a "GVT Player Export v1" file and says, in plain words, whether the War Room can use it:
+   errors (the pages would break or lie: the file is refused), warnings (a value the pages cannot read, so a number is
+   missing or less exact), what the file holds, and which pages will show real numbers. The same code runs in the page
+   (the Real data page, the HQ link, opened files) and in node (tools/check-export.mjs, for whoever builds the export).
+   Needs GVT.CAT; with GVT.engine loaded it also draws every model once, so a file that passes really does draw. */
+(function () {
+  'use strict';
+  var G = (typeof window !== 'undefined' ? window : globalThis).GVT;
+  var MAX_EXAMPLES = 3;
+
+  function isInt(v) { return typeof v === 'number' && isFinite(v) && Math.floor(v) === v; }
+  function isNum(v) { return typeof v === 'number' && isFinite(v); }
+  function isStr(v) { return typeof v === 'string'; }
+  function keys(list) { var o = {}; list.forEach(function (x) { o[x.key] = 1; }); return o; }
+
+  function run(obj) {
+    var CAT = G.CAT, out = { ok: false, errors: [], warnings: [], stats: null, pages: [], smoke: null };
+    var byCode = {};
+    function add(kind, code, msg, where) {
+      var e = byCode[code];
+      if (!e) { e = byCode[code] = { kind: kind, code: code, msg: msg, n: 0, examples: [] }; (kind === 'error' ? out.errors : out.warnings).push(e); }
+      e.n++; if (where != null && e.examples.length < MAX_EXAMPLES) e.examples.push(where);
+    }
+    function done() { out.ok = !out.errors.length; return out; }
+
+    // ---- the file itself ----
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) { add('error', 'not-object', 'This is not a player file: it should be one JSON object.'); return done(); }
+    if (obj.v !== 1) add('error', 'version', 'The format version "v" must be 1 (found ' + JSON.stringify(obj.v) + ').');
+    ['players', 'sessions'].forEach(function (k) { if (!Array.isArray(obj[k])) add('error', 'list-' + k, 'The "' + k + '" list is missing.'); });
+    ['buys', 'notifs'].forEach(function (k) { if (obj[k] != null && !Array.isArray(obj[k])) add('error', 'list-' + k, 'The "' + k + '" list must be a list.'); else if (obj[k] == null) add('warning', 'none-' + k, 'There is no "' + k + '" list, so ' + (k === 'buys' ? 'the money pages show only ad money' : 'the Notifications page stays empty') + '.'); });
+    var day0ok = isStr(obj.day0) && /^\d{4}-\d{2}-\d{2}$/.test(obj.day0) && !isNaN(Date.parse(obj.day0 + 'T00:00:00Z'));
+    if (!day0ok) add('error', 'day0', '"day0" must be the first day as YYYY-MM-DD (found ' + JSON.stringify(obj.day0) + ').');
+    if (!isInt(obj.days) || obj.days < 1) add('error', 'days', '"days" must be how many days the file covers, a whole number of 1 or more (found ' + JSON.stringify(obj.days) + ').');
+    if (obj.asOf != null && !(isStr(obj.asOf) && !isNaN(Date.parse(obj.asOf)))) add('warning', 'asOf', '"asOf" should be the date the file was made.');
+    if (obj.asOf == null) add('warning', 'asOf-missing', 'There is no "asOf" date, so the War Room cannot say how fresh the file is.');
+    if (obj.source !== 'hq') add('warning', 'source', '"source" should be "hq" (found ' + JSON.stringify(obj.source) + ').');
+    if (obj.adRate == null) add('warning', 'adRate', 'There is no "adRate", so ad money uses the War Room\'s built-in average rates.');
+    else if (!['ios', 'android', 'rew'].every(function (k) { return isNum(obj.adRate[k]) && obj.adRate[k] >= 0; })) add('error', 'adRate-bad', '"adRate" needs ios, android and rew as numbers (money per ad shown).');
+    if (out.errors.length) return done();
+
+    var D = obj.days, P = obj.players, S = obj.sessions, B = obj.buys || [], N = obj.notifs || [];
+    var PLAT = keys(CAT.PLATFORMS), AGE = keys(CAT.AGES), MODE = keys(CAT.MODES), PARK = keys(CAT.PARKS), RAID = keys(CAT.RAIDS), TIER = keys(CAT.TIERS),
+      SKU = keys(CAT.SKUS), SCREEN = keys(CAT.SCREENS), KIND = keys(CAT.NOTIFS), PLACE = keys(CAT.AD_PLACEMENTS), nFtue = CAT.FTUE.length;
+    var dayOk = function (d) { return isInt(d) && d >= 0 && d < D; };
+
+    // ---- players ----
+    var seen = {}, st = { plat: {}, age: 0, tz: 0, ftue: 0 };
+    P.forEach(function (p, i) {
+      var at = 'player ' + i;
+      if (!p || typeof p !== 'object') { add('error', 'p-obj', 'Every player must be an object.', at); return; }
+      at += p.name ? ' (' + p.name + ')' : '';
+      if (!isStr(p.uid) || !p.uid) add('error', 'p-uid', 'Every player needs a "uid" (the device id).', at);
+      else if (seen[p.uid]) add('warning', 'p-uid-dup', 'Two players share the same "uid", so the lookup cannot tell them apart.', at + ' and player ' + seen[p.uid].i); else seen[p.uid] = { i: i };
+      if (!isInt(p.inst) || p.inst < 0 || p.inst >= D) add('error', 'p-inst', '"inst" (the install day, counted from day0) must be a whole number from 0 to ' + (D - 1) + '.', at + ': ' + JSON.stringify(p.inst));
+      if (!isStr(p.name) || !p.name) add('warning', 'p-name', 'A player has no "name", so the lookup shows them without one.', at);
+      if (!PLAT[p.plat]) add('warning', 'p-plat', '"plat" should be one of ' + Object.keys(PLAT).join(', ') + '. Players without one only show under All platforms.', at + ': ' + JSON.stringify(p.plat)); else st.plat[p.plat] = 1;
+      if (!isInt(p.tz) || p.tz < -720 || p.tz > 840) add('warning', 'p-tz', '"tz" (minutes from UTC, for example -300 for New York) is missing, so "When they play" cannot place this player\'s hours.', at); else st.tz++;
+      if (p.lang != null && !isStr(p.lang)) add('warning', 'p-lang', '"lang" should be a language code such as "en".', at);
+      if (p.push !== 0 && p.push !== 1) add('warning', 'p-push', '"push" should be 1 (notifications on) or 0.', at);
+      if (!isInt(p.ftue) || p.ftue < 0 || p.ftue >= nFtue) add('warning', 'p-ftue', '"ftue" (the furthest first step reached, 0 to ' + (nFtue - 1) + ') is missing, so "How far new players get" cannot place this player.', at); else if (p.ftue > 0) st.ftue++;
+      if (!isInt(p.camp) || p.camp < 0) add('warning', 'p-camp', '"camp" (highest campaign level won, 0 if none) should be a whole number.', at);
+      if (p.noads != null && !(isInt(p.noads) && p.noads >= -1 && p.noads < D)) add('warning', 'p-noads', '"noads" should be the day No Ads was bought, or -1.', at);
+      if (p.paid != null && p.paid !== 0 && p.paid !== 1) add('warning', 'p-paid', '"paid" should be 1 or 0.', at);
+      if (p.age != null && !AGE[p.age]) add('warning', 'p-age', '"age" should be one of ' + Object.keys(AGE).join(', ') + ' (never a birthday).', at + ': ' + JSON.stringify(p.age));
+      else if (p.age && p.age !== 'unknown') st.age++;
+    });
+    var pOk = function (k) { return isInt(k) && k >= 0 && k < P.length; };
+
+    // ---- sessions and battles ----
+    var nb = 0, fam = {}, adsSeen = 0, mSpread = {}, endSeen = 0;
+    S.forEach(function (s, i) {
+      var at = 'session ' + i;
+      if (!s || typeof s !== 'object') { add('error', 's-obj', 'Every session must be an object.', at); return; }
+      if (!pOk(s.p)) { add('error', 's-p', 'A session points to a player who is not in the list ("p" is the player\'s position, from 0).', at + ': p=' + JSON.stringify(s.p)); return; }
+      if (!dayOk(s.d)) add('error', 's-d', 'A session\'s day "d" must be from 0 to ' + (D - 1) + '.', at + ': d=' + JSON.stringify(s.d));
+      else if (isInt(P[s.p].inst) && s.d < P[s.p].inst) add('warning', 's-before', 'A session happens before its player installed.', at);
+      if (!isNum(s.s) || s.s < 0) add('error', 's-s', 'A session\'s length "s" must be seconds, 0 or more.', at);
+      if (!isInt(s.ai) || s.ai < 0 || !isInt(s.ar) || s.ar < 0) add('error', 's-ads', '"ai" and "ar" (full-screen ads and ads watched for a reward) must be whole numbers, 0 if none.', at);
+      else adsSeen += s.ai + s.ar;
+      if (!Array.isArray(s.b)) { add('error', 's-b', 'Every session needs a "b" list of battles (empty if none).', at); return; }
+      if (!isInt(s.m) || s.m < 0 || s.m > 1439) add('warning', 's-m', '"m" (start minute on the player\'s clock, 0 to 1439) is missing, so "When they play" cannot use this session.', at); else mSpread[Math.floor(s.m / 60)] = 1;
+      if (!SCREEN[s.end]) add('warning', 's-end', '"end" (the screen when the game closed) should be one of ' + Object.keys(SCREEN).join(', ') + '.', at + ': ' + JSON.stringify(s.end)); else endSeen++;
+      if (s.adAgo != null && !isNum(s.adAgo)) add('warning', 's-adAgo', '"adAgo" should be seconds since the last ad, or -1.', at);
+      if (s.pl != null && (typeof s.pl !== 'object' || Object.keys(s.pl).some(function (k) { return !PLACE[k] || !isInt(s.pl[k]); }))) add('warning', 's-pl', '"pl" should count full-screen ads by place (' + Object.keys(PLACE).join(', ') + ').', at);
+      if (s.qpl != null && !PLACE[s.qpl]) add('warning', 's-qpl', '"qpl" (the place of the ad the player quit on) should be one of ' + Object.keys(PLACE).join(', ') + '.', at);
+      s.b.forEach(function (b, j) {
+        var bt = at + ', battle ' + j; nb++;
+        if (!b || typeof b !== 'object') { add('error', 'b-obj', 'Every battle must be an object.', bt); return; }
+        if (!MODE[b.k]) add('warning', 'b-k', 'A battle\'s mode "k" is not one the War Room knows, so it counts as solo. Known modes: ' + Object.keys(MODE).join(', ') + '.', bt + ': ' + JSON.stringify(b.k));
+        else fam[CAT.mode[b.k].family] = 1;
+        if (b.o !== 'w' && b.o !== 'l' && b.o !== 'r') add('warning', 'b-o', 'A battle\'s result "o" should be w (won), l (lost) or r (retreated).', bt);
+        if (!isNum(b.s) || b.s < 0) add('warning', 'b-s', 'A battle\'s length "s" should be seconds.', bt);
+        if (b.h != null && !(isInt(b.h) && b.h >= 1)) add('warning', 'b-h', '"h" should be how many people fought on the player\'s side (1 if alone).', bt);
+        if ((b.k === 'camp' || b.k === 'elite' || b.k === 'third') && !(isInt(b.lv) && b.lv >= 1)) add('warning', 'b-lv', 'A campaign battle needs its level "lv".', bt);
+        if (b.k === 'park' && !PARK[b.sub]) add('warning', 'b-park', 'A park battle\'s "sub" should name the park (' + Object.keys(PARK).join(', ') + ').', bt);
+        if (b.k === 'raid' && !RAID[b.sub]) add('warning', 'b-raid', 'A raid\'s "sub" should name the raid (' + Object.keys(RAID).join(', ') + ').', bt);
+        if (b.k === 'raid' && !TIER[b.t]) add('warning', 'b-tier', 'A raid\'s "t" should be its tier (' + Object.keys(TIER).join(', ') + ').', bt);
+      });
+    });
+
+    // ---- purchases ----
+    var spent = 0;
+    B.forEach(function (b, i) {
+      var at = 'purchase ' + i;
+      if (!b || !pOk(b.p)) { add('error', 'buy-p', 'A purchase points to a player who is not in the list.', at); return; }
+      if (!dayOk(b.d)) add('error', 'buy-d', 'A purchase\'s day "d" must be from 0 to ' + (D - 1) + '.', at);
+      if (!isNum(b.usd) || b.usd < 0) add('error', 'buy-usd', 'A purchase needs "usd": the money after the store\'s cut.', at); else spent += b.usd;
+      if (!SKU[b.sku]) add('warning', 'buy-sku', 'A purchase\'s product "sku" is not one the War Room knows (' + Object.keys(SKU).join(', ') + ').', at + ': ' + JSON.stringify(b.sku));
+    });
+
+    // ---- notifications ----
+    N.forEach(function (t, i) {
+      var at = 'notification ' + i;
+      if (!t || !pOk(t.p)) { add('error', 'n-p', 'A notification points to a player who is not in the list.', at); return; }
+      if (!dayOk(t.d)) add('error', 'n-d', 'A notification\'s day "d" must be from 0 to ' + (D - 1) + '.', at);
+      if (!KIND[t.k]) add('warning', 'n-k', 'A notification\'s kind "k" should be one of ' + Object.keys(KIND).join(', ') + '.', at + ': ' + JSON.stringify(t.k));
+      if (t.r !== 'open' && t.r !== 'dismiss' && t.r !== 'ignore') add('warning', 'n-r', 'A notification\'s answer "r" should be open, dismiss or ignore.', at);
+      if (!isInt(t.m) || t.m < 0 || t.m > 1439) add('warning', 'n-m', 'A notification\'s minute "m" should be 0 to 1439 on the player\'s clock.', at);
+    });
+
+    // ---- what the file holds ----
+    var d0 = day0ok ? Date.parse(obj.day0 + 'T00:00:00Z') : 0, iso = function (n) { return new Date(d0 + n * 864e5).toISOString().slice(0, 10); };
+    out.stats = { players: P.length, sessions: S.length, battles: nb, buys: B.length, notifs: N.length, spent: spent, days: D, from: day0ok ? iso(0) : null, to: day0ok ? iso(D - 1) : null, asOf: obj.asOf || null };
+
+    // ---- which pages show real numbers ----
+    var share = function (k) { return P.length ? k / P.length : 0; };
+    var pg = function (id, label, state, why) { out.pages.push({ id: id, label: label, state: state, why: why }); };
+    pg('briefing', 'Briefing', S.length ? 'real' : 'none', S.length ? 'New players, players a day, coming back and money.' : 'No sessions in the file.');
+    pg('stop', 'Where they stop', !S.length ? 'none' : st.ftue ? 'real' : 'partly', st.ftue ? 'Levels, giving up, the first steps and the last screen.' : 'Levels and giving up are real; "ftue" is 0 for everyone, so the first steps are empty.');
+    var nf = Object.keys(fam).length;
+    pg('modes', 'How they play', !nb ? 'none' : nf >= 2 ? 'real' : 'partly', !nb ? 'No battles in the file.' : nf >= 2 ? 'Battles split by way of playing.' : 'Every battle is the same kind, so there is no split to show.');
+    pg('time', 'When they play', share(st.tz) >= 0.5 && Object.keys(mSpread).length > 1 ? 'real' : 'none', share(st.tz) >= 0.5 ? 'Hours on each player\'s own clock.' : 'Most players have no time zone "tz".');
+    pg('ads', 'Ads', adsSeen ? (endSeen ? 'real' : 'partly') : 'none', adsSeen ? 'Ads shown, ad money and quitting after an ad.' : 'No ads in the file.');
+    pg('money', 'Money', B.length || adsSeen ? 'real' : 'none', B.length ? 'Purchases and ad money.' : adsSeen ? 'Ad money only: no purchases in the file.' : 'No money in the file.');
+    pg('notifs', 'Notifications', N.length ? 'real' : 'none', N.length ? 'Opened, swiped away and coming back.' : 'No notifications in the file.');
+    pg('players', 'Players', P.length ? 'real' : 'none', 'Every player by name.');
+    pg('ages', 'Who plays', st.age ? 'real' : 'none', st.age ? 'Age groups.' : 'No player has an age group.');
+    pg('platform', 'Platform filter', Object.keys(st.plat).length > 1 ? 'real' : 'partly', Object.keys(st.plat).length > 1 ? 'Players split by platform.' : 'Every player is on one platform (or none), so the filter has nothing to split.');
+
+    // ---- the proof: draw every model once ----
+    if (!out.errors.length && G.engine) {
+      try {
+        var ix = G.engine.index(obj);
+        [7, 30, 90, 'all'].forEach(function (r) { G.engine.model(ix, { range: r, platform: 'all', age: 'all' }); });
+        if (P.length) G.engine.player(ix, 0);
+        out.smoke = { ok: true, msg: 'Every page was worked out from this file without a problem.' };
+      } catch (err) {
+        out.smoke = { ok: false, msg: 'The War Room broke while working out the pages: ' + (err && err.message || err) };
+        add('error', 'smoke', out.smoke.msg);
+      }
+    }
+    return done();
+  }
+
+  // the same report as plain text (the command line, and the copy button)
+  function text(r) {
+    var L = [];
+    L.push(r.ok ? 'READY: the War Room can use this file.' : 'NOT READY: ' + r.errors.length + ' problem' + (r.errors.length === 1 ? '' : 's') + ' to fix first.');
+    if (r.stats) L.push('Holds ' + r.stats.players + ' players, ' + r.stats.sessions + ' sessions, ' + r.stats.battles + ' battles, ' + r.stats.buys + ' purchases and ' + r.stats.notifs + ' notifications, ' + r.stats.from + ' to ' + r.stats.to + ' (' + r.stats.days + ' days).');
+    var list = function (title, xs) { if (!xs.length) return; L.push(''); L.push(title); xs.forEach(function (e) { L.push('- ' + e.msg + (e.n > 1 ? ' (' + e.n + ' times)' : '') + (e.examples.length ? ' e.g. ' + e.examples.join('; ') : '')); }); };
+    list('Problems (the file is refused until these are fixed):', r.errors);
+    list('Warnings (the file works, but some numbers will be missing or rough):', r.warnings);
+    if (r.pages.length) { L.push(''); L.push('Pages:'); r.pages.forEach(function (p) { L.push('- ' + p.label + ': ' + ({ real: 'real numbers', partly: 'partly', none: 'nothing yet' })[p.state] + '. ' + p.why); }); }
+    if (r.smoke) { L.push(''); L.push(r.smoke.msg); }
+    return L.join('\n');
+  }
+
+  G.check = { run: run, text: text };
+})();
+
 /* ---- report.js ---- */
 /* GVT War Room · report.js — reads Wyatt's GVT Daily Report (the HTML with window.KPI_BAKED, or HQ's kpi.json)
    and maps every number it already has onto the same model the sections draw. Anything the report does not carry
@@ -1751,7 +1939,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var m = h('div', { class: 'meter', role: 'img', 'aria-label': o.label || '' },
       h('div', { class: 'fill', style: { width: (f * 100).toFixed(1) + '%', background: o.value >= o.goal ? 'var(--good)' : o.color || 'var(--green)' } }),
       h('div', { class: 'goal', style: { left: (g * 100).toFixed(1) + '%' } }, h('span', { text: o.goalLabel || 'GOAL ' + F().money(o.goal) })));
-    var ticks = []; for (var v = 0; v <= max + 1e-9; v += o.step || 0.25) ticks.push(h('span', { text: F().money(v) }));
+    // about five ticks whatever the scale ($0.25 steps up to $1.25; $2.50 steps when a player is worth $10)
+    var step = o.step || (function () { var raw = max / 5, p = Math.pow(10, Math.floor(Math.log10(raw))), q = raw / p; return (q <= 1 ? 1 : q <= 2 ? 2 : q <= 2.5 ? 2.5 : q <= 5 ? 5 : 10) * p; })();
+    var ticks = []; for (var v = 0; v <= max + 1e-9; v += step) ticks.push(h('span', { text: F().money(v) }));
     return h('div', { style: { 'padding-top': '24px' } }, m, h('div', { class: 'meter-scale' }, ticks));
   }
 
@@ -2153,7 +2343,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
            { label: 'Came back the next day', v: back1, color: 'var(--green)' }]
         : [{ label: 'Left in the first minute', v: H.installs - H.played, color: 'var(--tan)' },
            { label: 'Played a full minute', v: H.played, color: 'var(--green)' }];
-      cards.push(pic('What happens to new players', ui.donut({ parts: parts, center: f.num(H.installs), centerSub: 'new players', fmt: function (v) { return f.num(v) + ' players'; }, label: 'What happens to ' + f.num(H.installs) + ' new players' }),
+      cards.push(pic('What happens to new players', ui.donut({ parts: parts, center: f.num(H.installs), centerSub: 'new players', fmt: function (v) { return f.num(v) + (v === 1 ? ' player' : ' players'); }, label: 'What happens to ' + f.num(H.installs) + ' new players' }),
         '<b>' + f.pct(H.bouncePct) + ' leave in the first minute.</b> That first minute is the first thing to fix.', { href: '#stop', text: 'Where they stop →' }));
     } else cards.push(none('What happens to new players', 'No new players', { t: 'No new players ' + inR, b: 'Try a longer range or all platforms.' }, { href: '#stop', text: 'Where they stop →' }));
 
@@ -5364,6 +5554,100 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   G.sections.push({ id: 'team', nav: 'Team filter', title: 'Team filter', question: 'Leave the team\'s own accounts out of the numbers.', area: null, render: render });
 })();
 
+/* ---- sec-data.js ---- */
+/* GVT War Room · Real data (11/24): load real players from HQ's link, or check a player file before using it.
+   The link (it carries HQ's key) is kept in this browser only, never in the page. Every file, from the link or opened
+   here, goes through GVT.check first; a file with problems is refused and its report shows below. ctx.data comes from
+   app.js (dataCtx). */
+(function () {
+  'use strict';
+  var G = window.GVT;
+  G.sections = G.sections || [];
+  var SAMPLE_URL = 'gvt-player-export-v1.sample.json';
+
+  function render(main, M, ctx) {
+    var ui = ctx.ui, h = ui.h, f = ctx.fmt, D = ctx.data, HQ = D.hq || {}, C = D.check;
+    var live = D.live, rep = !!ctx.isReport;
+
+    main.appendChild(ui.secHead({ eyebrow: 'Settings', title: 'Real data', question: 'Load real players from HQ, or check a player file before using it.' }));
+    main.appendChild(ui.short([
+      live ? '<b>Right now every page shows real players</b>, from ' + ui.esc(M.source && M.source.label === 'HQ player export' ? 'HQ' : 'a player file') + '.'
+        : rep ? '<b>Right now the pages show Wyatt\'s daily report.</b> It has totals, not one row per player, so some pages stay empty.'
+        : '<b>Right now every page shows made-up example players.</b>',
+      '<b>Once HQ serves the player file, paste its link once</b> and every page switches to real players, each time you open the War Room. The link stays in this browser only.',
+      '<b>Every file is checked first.</b> A file with problems is refused, and this page lists what to fix in plain words.'
+    ]));
+
+    // ---- 1. the HQ link ----
+    var st = HQ.status || 'idle';
+    var pill = { ok: ['good', 'Connected'], loading: ['info', 'Loading…'], error: ['critical', 'Problem'], idle: ['muted', D.saved ? 'Saved' : 'Not connected'] }[st];
+    var input = h('input', { type: 'url', id: 'hq-link', class: 'hq-in', placeholder: 'https://…/gvt/export.json?key=…', autocomplete: 'off', spellcheck: 'false', 'aria-label': 'The link to HQ\'s player file' });
+    var remember = h('input', { type: 'checkbox', id: 'hq-remember', checked: true });
+    var load = function () { D.load(input.value || HQ.url, remember.checked); };
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') load(); });
+    var c1 = ui.card({ title: 'Load real players from HQ', howto: 'Paste the link to HQ\'s player file. It is the same kind of link as the daily report\'s, with HQ\'s key in it.' });
+    c1.body.appendChild(h('div', { class: 'hq-status', role: 'status' }, ui.pill(pill[0], pill[1]),
+      h('span', { html: HQ.msg ? ui.esc(HQ.msg) + (st === 'ok' && HQ.at ? ' (' + ui.esc(HQ.at) + ')' : '') : D.saved ? 'A link is saved in this browser. It loads each time you open the War Room.' : 'No link yet. HQ does not serve the player file yet: it is part of the Tracking plan.' })));
+    if (HQ.url && st !== 'idle') c1.body.appendChild(h('p', { class: 'howto', style: { 'overflow-wrap': 'anywhere' }, text: 'Link: ' + D.safe(HQ.url) }));
+    c1.body.appendChild(h('div', { class: 'hq-row' }, input, h('button', { type: 'button', class: 'btn primary', id: 'hq-load', disabled: st === 'loading' || null, on: { click: load } }, st === 'loading' ? 'Loading…' : 'Load')));
+    c1.body.appendChild(h('label', { class: 'hq-check', for: 'hq-remember' }, remember, ' Remember the link in this browser, and load it each time'));
+    var btns = [];
+    if (D.saved || (HQ.url && st === 'ok')) btns.push(h('button', { type: 'button', class: 'btn', id: 'hq-reload', on: { click: function () { D.load(HQ.url || '', true); } }, disabled: !HQ.url || null }, 'Load again now'),
+      h('button', { type: 'button', class: 'btn', id: 'hq-forget', on: { click: D.forget } }, 'Forget the link'));
+    if (live) btns.push(h('button', { type: 'button', class: 'btn', id: 'to-example', on: { click: D.backToExample } }, 'Back to example data'));
+    if (btns.length) c1.body.appendChild(h('div', { class: 'hq-row', style: { 'margin-top': '10px' } }, btns));
+    c1.appendChild(h('div', { class: 'means', html: '<b>Keep the link private.</b> Anyone who has it can read every player\'s data. Never post it in a chat, an email to the wider team, or on a page. The War Room only keeps it in this browser, and only if you tick the box.' }));
+    main.appendChild(c1);
+
+    // ---- 2. check a file ----
+    var file = h('input', { type: 'file', id: 'check-file', accept: '.json,application/json', class: 'sr', tabindex: '-1', on: { change: function (e) { D.checkFile(e.target.files && e.target.files[0]); e.target.value = ''; } } });
+    var c2 = ui.card({ title: 'Check a player file', howto: 'Pick a player file to see if the War Room can use it. It checks every player, session, battle, purchase and notification. Nothing leaves this browser.' });
+    c2.body.appendChild(h('div', { class: 'hq-row' }, h('label', { class: 'btn', for: 'check-file', tabindex: '0', on: { keydown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); file.click(); } } } }, 'Pick a file to check…'), file));
+    if (C && C.report) c2.body.appendChild(report(C, ui, h, f, D));
+    main.appendChild(c2);
+
+    // ---- 3. for whoever builds the export ----
+    main.appendChild(ui.card({ title: 'For whoever builds the export', howto: 'What HQ needs to serve, in short. The Tracking plan has every field.',
+      children: h('ol', { class: 'about', style: { 'padding-left': '20px' } },
+        h('li', { html: '<b>One JSON file</b> in the format on the <a href="#plan">Tracking plan</a> ("GVT Player Export v1"). <a href="' + SAMPLE_URL + '" download>Download a sample file</a>: 40 made-up players in the exact format, which passes the checker.' }),
+        h('li', { html: '<b>Served by HQ at a link with the admin key in it</b>, the same way as the daily report\'s <code>kpi.json</code>. For example <code>/gvt/export.json?key=…</code>.' }),
+        h('li', { html: '<b>HQ must let this page read it.</b> The answer needs the header <code>Access-Control-Allow-Origin: ' + ui.esc(location.origin === 'null' ? 'https://skypilot82.github.io' : location.origin) + '</code> (or wherever the War Room is opened from).' }),
+        h('li', { html: '<b>Check it before calling it done:</b> <code>node tools/check-export.mjs export.json</code> (or the live link) in the War Room folder. It prints the same report as this page and ends with "READY" when the file is good.' }))
+    }));
+
+    main.appendChild(ui.about([
+      '<b>Problems</b> stop a file from being used, because a page would break or show a wrong number (for example a session that points to a player who is not in the file).',
+      '<b>Warnings</b> let a file through. Some numbers will be missing or rougher (for example a player with no time zone is left out of "When they play").',
+      '<b>Pages</b>: which pages will show real numbers from the file, and why the others will not yet.',
+      'The team list (Team filter page) still applies to real players.'
+    ]));
+  }
+
+  function report(C, ui, h, f, D) {
+    var r = C.report, wrap = h('div', { class: 'ck' });
+    wrap.appendChild(h('div', { class: 'ck-head' }, ui.pill(r.ok ? 'good' : 'critical', r.ok ? 'Ready' : 'Not ready'),
+      h('b', { text: (r.ok ? 'The War Room can use ' : 'The War Room cannot use ') + (C.name || 'this file') + (r.ok ? '.' : ' yet: ' + r.errors.length + (r.errors.length === 1 ? ' problem' : ' problems') + ' to fix.') })));
+    if (r.stats) wrap.appendChild(h('p', { class: 'howto', text: 'It holds ' + f.num(r.stats.players) + ' players, ' + f.num(r.stats.sessions) + ' sessions, ' + f.num(r.stats.battles) + ' battles, ' + f.num(r.stats.buys) + ' purchases and ' + f.num(r.stats.notifs) + ' notifications, from ' + r.stats.from + ' to ' + r.stats.to + '.' }));
+    function list(title, xs, cls) {
+      if (!xs.length) return null;
+      return h('div', { class: 'ck-list ' + cls }, h('h3', { text: title }), h('ul', null, xs.map(function (e) {
+        return h('li', null, h('span', { text: e.msg }), e.n > 1 || e.examples.length ? h('small', { text: (e.n > 1 ? f.num(e.n) + ' times. ' : '') + (e.examples.length ? 'For example ' + e.examples.join('; ') + '.' : '') }) : null);
+      })));
+    }
+    var bad = list('Problems to fix', r.errors, 'bad'); if (bad) wrap.appendChild(bad);
+    var warn = list('Warnings', r.warnings, 'warn');
+    if (warn) wrap.appendChild(r.warnings.length > 4 ? h('details', { class: 'deep' }, h('summary', { text: r.warnings.length + ' warnings: the file works, but some numbers will be missing or rough' }), warn) : warn);
+    if (r.pages && r.pages.length) wrap.appendChild(h('div', { class: 'ck-list' }, h('h3', { text: 'Which pages will show real numbers' }), h('ul', { class: 'ck-pages' }, r.pages.map(function (p) {
+      var c = { real: ['good', 'Real numbers'], partly: ['warning', 'In part'], none: ['muted', 'Nothing yet'] }[p.state];
+      return h('li', null, ui.pill(c[0], c[1]), h('b', { text: p.label }), h('span', { text: p.why }));
+    }))));
+    if (r.ok && C.obj) wrap.appendChild(h('div', { class: 'hq-row', style: { 'margin-top': '12px' } }, h('button', { type: 'button', class: 'btn primary', id: 'use-checked', on: { click: D.useChecked } }, 'Use this file on every page')));
+    return wrap;
+  }
+
+  G.sections.push({ id: 'data', nav: 'Real data', title: 'Real data', question: 'Load real players from HQ, or check a player file.', area: null, render: render });
+})();
+
 /* ---- sec-plan.js ---- */
 /* GVT War Room · the Tracking plan : what the game needs to send so every page here runs on real players.
    For Wyatt (who puts the tracking into the game) and for anyone asking "where does this number come from?".
@@ -5839,8 +6123,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   var G = window.GVT, ui = G.ui, h = ui.h, E = G.engine, CAT = G.CAT;
   G.sections = G.sections || [];
 
-  var ORDER = ['briefing', 'stop', 'modes', 'time', 'ads', 'money', 'notifs', 'players', 'ages', 'team', 'plan'];
-  var state = { source: 'demo', raw: null, data: null, ix: null, report: null, reportFile: '', reportName: '', filters: { range: 30, platform: 'all', age: 'all' }, M: null };
+  var ORDER = ['briefing', 'stop', 'modes', 'time', 'ads', 'money', 'notifs', 'players', 'ages', 'team', 'data', 'plan'];
+  var state = { source: 'demo', raw: null, data: null, ix: null, report: null, reportFile: '', reportName: '', filters: { range: 30, platform: 'all', age: 'all' }, M: null, hq: { url: '', status: 'idle' }, check: null };
   var goodFilters = { range: 30, platform: 'all', age: 'all' }; // the last filters that drew without an error
   var REPORT_FIXED = 'The daily report covers fixed windows, so the range, platform and age filters are off.';
 
@@ -6011,7 +6295,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     if (M.source.kind === 'hq') return h('div', { class: 'source report', role: 'status' }, h('b', { text: 'Real players' }), h('span', { class: 'grow', html: 'From <strong>' + ui.esc(state.reportName) + '</strong>, a GVT Player Export. Nothing leaves this browser.' }), h('span', { class: 'chip', text: M.filters.start + ' to ' + M.filters.end }));
     return h('div', { class: 'source demo', role: 'status' }, h('b', { text: 'Example data' }),
       h('span', { class: 'grow', html: 'These players and numbers are <strong>made up</strong> to show how the tool works, shaped like the real game. ' +
-        (state.report ? 'Press <strong>Show the real numbers</strong> to see what HQ already has, from ' + ui.esc(reportName()) + '.' : 'Open Wyatt\'s daily report to see the real numbers HQ already has.') }),
+        (state.hq.status === 'loading' ? '<strong>Loading real players from HQ…</strong>' : state.report ? 'Press <strong>Show the real numbers</strong> to see what HQ already has, from ' + ui.esc(reportName()) + '.' : 'Open Wyatt\'s daily report to see the real numbers HQ already has, or <a href="#data">load real players</a>.') }),
       h('span', { class: 'chip', text: M.filters.start + ' to ' + M.filters.end }));
   }
   function rail(cur) {
@@ -6043,7 +6327,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     ROOT.appendChild(bar()); ROOT.appendChild(banner());
     ROOT.appendChild(h('div', { class: 'shell' }, rail(sec.id), main));
     var ctx = { ui: ui, fmt: E.fmt, CAT: CAT, M: state.M, ix: state.source === 'demo' ? state.ix : null, isReport: state.source === 'report', arg: r.arg, go: go,
-      player: function (i) { return state.ix ? E.player(state.ix, i) : null; }, filters: state.filters, refresh: refresh, team: teamCtx() };
+      player: function (i) { return state.ix ? E.player(state.ix, i) : null; }, filters: state.filters, refresh: refresh, team: teamCtx(), data: dataCtx() };
     try {
       sec.render(main, state.M, ctx);
     } catch (err) {
@@ -6076,18 +6360,11 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     rd.onload = function () {
       var txt = String(rd.result), obj = null;
       try { if (txt.trim().charAt(0) === '{') obj = JSON.parse(txt); } catch (e2) { }
-      if (obj && obj.v === 1 && obj.players && obj.sessions) { // a GVT Player Export v1 from HQ: real players, every page lights up
-        // work everything out first; only a file that draws replaces what is on screen
-        var ix, M;
-        try {
-          if (!Array.isArray(obj.players) || !Array.isArray(obj.sessions)) throw new Error('players and sessions must be lists');
-          if (typeof obj.day0 !== 'string' || isNaN(Date.parse(obj.day0 + 'T00:00:00Z'))) throw new Error('day0 is not a date');
-          obj.buys = obj.buys || []; obj.notifs = obj.notifs || [];
-          var fil = E.team.apply(obj, team.off ? [] : team.entries); ix = E.index(fil.data); M = E.model(ix, state.filters);
-        } catch (err) { alert2('That player export could not be read (' + (err && err.message || err) + '). The numbers on screen have not changed.'); return; }
-        state.raw = obj; applyTeam(); state.M = E.model(state.ix, state.filters); state.reportName = f.name; state.source = 'demo';
-        goodFilters = { range: state.filters.range, platform: state.filters.platform, age: state.filters.age };
-        render(); return;
+      if (obj && obj.v === 1 && obj.players && obj.sessions) { // a GVT Player Export v1 from HQ: checked first, then every page lights up
+        var r1 = G.check.run(obj);
+        if (!r1.ok) { state.check = { report: r1, name: f.name, obj: null }; go('data'); return; } // the Real data page shows the report
+        useExport(obj, f.name);
+        return;
       }
       var rep, RM;
       try { rep = G.report.parse(txt); RM = G.report.model(rep, f.name); }
@@ -6096,6 +6373,59 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     };
     rd.readAsText(f);
   }
+  // ---- real players: the HQ link (kept in this browser only) and checked files ----
+  var HQ_KEY = 'gvt-war-room-hq-link';
+  function hqSaved() { try { return localStorage.getItem(HQ_KEY) || ''; } catch (e) { return ''; } }
+  function hqSave(url) { try { if (url) localStorage.setItem(HQ_KEY, url); else localStorage.removeItem(HQ_KEY); } catch (e) { } }
+  // the link without its key, for anything shown on screen
+  function hqSafe(url) { return String(url || '').replace(/([?&#](key|k|token|admin|auth)=)[^&#]+/gi, '$1…'); }
+  // switch every page to a checked export; false (with the reason on screen) if the pages cannot be drawn from it
+  function useExport(obj, name) {
+    var M;
+    try { var fil = E.team.apply(obj, team.off ? [] : team.entries); M = E.model(E.index(fil.data), state.filters); }
+    catch (err) { alert2('That player file could not be drawn (' + (err && err.message || err) + '). The numbers on screen have not changed.'); return false; }
+    state.raw = obj; applyTeam(); state.M = E.model(state.ix, state.filters); state.reportName = name; state.source = 'demo';
+    goodFilters = { range: state.filters.range, platform: state.filters.platform, age: state.filters.age };
+    render(); return true;
+  }
+  function hqLoad(url, remember) {
+    url = String(url || '').trim();
+    if (!/^https?:\/\//.test(url)) { state.hq = { url: url, status: 'error', msg: 'That does not look like a link. It should start with https://' }; render(); return; }
+    state.hq = { url: url, status: 'loading', msg: 'Loading real players from HQ…' }; render();
+    fetch(url, { cache: 'no-store' }).then(function (res) {
+      if (!res.ok) throw { said: 'HQ answered "' + res.status + (res.statusText ? ' ' + res.statusText : '') + '". ' + (res.status === 401 || res.status === 403 ? 'The key in the link may be wrong or out of date.' : res.status === 404 ? 'The link may be wrong, or HQ does not serve the export yet.' : '') };
+      return res.text();
+    }).then(function (txt) {
+      var obj; try { obj = JSON.parse(txt); } catch (e) { throw { said: 'The link answered, but not with a player file (it is not JSON).' }; }
+      var r = G.check.run(obj);
+      state.check = { report: r, name: 'the file from HQ', obj: null };
+      if (!r.ok) throw { said: 'The player file from HQ has problems, listed below. The numbers on screen have not changed.' };
+      if (remember) hqSave(url);
+      state.hq = { url: url, status: 'ok', msg: 'Real players loaded from HQ.', at: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), saved: !!remember };
+      useExport(obj, 'HQ (live link)');
+    }).catch(function (err) {
+      state.hq = { url: url, status: 'error', msg: err && err.said ? err.said : 'Could not reach the link. Check that it is right, and that HQ lets this page read it (HQ has to allow ' + (location.origin && location.origin !== 'null' ? location.origin : 'the War Room\'s address') + '; see "For whoever builds the export").' };
+      render();
+    });
+  }
+  function hqForget() { hqSave(''); state.hq = { url: '', status: 'idle', msg: 'The link is forgotten in this browser.' }; if (state.raw && state.raw.source !== 'demo') setRaw(G.demo()); refresh(); }
+  function checkFile(file) {
+    if (!file) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      var obj = null; try { obj = JSON.parse(String(rd.result)); } catch (e) { state.check = { report: { ok: false, errors: [{ msg: 'This is not a JSON file.', n: 1, examples: [] }], warnings: [], pages: [], stats: null }, name: file.name, obj: null }; render(); return; }
+      var r = G.check.run(obj); state.check = { report: r, name: file.name, obj: r.ok ? obj : null }; render();
+    };
+    rd.readAsText(file);
+  }
+  function dataCtx() {
+    return { hq: state.hq, saved: !!hqSaved(), safe: hqSafe, check: state.check, live: state.M && state.M.source && state.M.source.kind === 'hq',
+      load: hqLoad, forget: hqForget, checkFile: checkFile,
+      useChecked: function () { if (state.check && state.check.obj && useExport(state.check.obj, state.check.name)) go('briefing'); },
+      backToExample: function () { setRaw(G.demo()); refresh(); },
+      sample: function () { return G.demo(); } };
+  }
+
   function alert2(msg) {
     ROOT.querySelectorAll('.source[role=alert]').forEach(function (x) { x.remove(); }); // one error banner at a time
     var m = h('div', { class: 'source', role: 'alert', style: { background: 'var(--crit-wash)' } }, h('b', { text: 'Could not open', style: { background: 'var(--crit)' } }), h('span', { class: 'grow', text: msg }),
@@ -6110,6 +6440,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     if (window.GVT_REPORT) { try { state.report = G.report.parse(window.GVT_REPORT); state.reportName = state.reportFile = window.GVT_REPORT_NAME || 'the bundled report'; if (/[?&]source=report/.test(location.search)) state.source = 'report'; } catch (e) { } }
     compute(); render({ anchor: true });
     teamConnect();
+    var saved = hqSaved(); if (saved && state.source !== 'report') hqLoad(saved, true);
     addEventListener('hashchange', function () {
       var r = route();
       // #money-calc: an element on this page, not a section. Scroll to it and stay (the URL becomes #money/money-calc).
