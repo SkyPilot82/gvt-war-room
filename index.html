@@ -218,7 +218,7 @@ main [id] { scroll-margin-top: 76px; } /* #money-calc and friends land below the
 .tbl.sticky1:not(.stack) th:first-child, .tbl.sticky1:not(.stack) td:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: inset -1px 0 0 var(--line); }
 .tbl.sticky1:not(.stack) tbody tr:hover td:first-child { background: var(--surface-2); }
 .tbl { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
-.tbl th { text-align: left; font: 600 var(--fs-xs)/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+.tbl th { text-align: left; font: 650 var(--fs-sm)/1.25 var(--body); color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
 .tbl th.n, .tbl td.n { text-align: right; }
 .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .tbl tr:last-child td { border-bottom: 0; }
@@ -305,6 +305,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
 /* ---- the Briefing's picture cards (11/24): a donut or two bars, its legend with the numbers, one plain sentence ---- */
 .glance { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); }
 .glance .card { display: flex; flex-direction: column; gap: 10px; }
+.glance .card.wide { grid-column: 1 / -1; }
 .glance .say { font-size: var(--fs-md); color: var(--ink); max-width: 60ch; }
 .glance .say b { font-weight: 750; }
 .glance .more { margin-top: auto; font-size: var(--fs-sm); font-weight: 650; }
@@ -488,6 +489,13 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     { key: 'web', label: 'Web' }, { key: 'amazon', label: 'Amazon' }, { key: 'steam', label: 'Steam' }
   ];
 
+  // Age groups (11/24, Skylar). The player is never asked a birthday; the group arrives on the player row as 'age'
+  // from whatever source HQ ends up with (see the Tracking plan). 'unknown' = no answer for this player.
+  var AGES = [
+    { key: 'u13', label: 'Under 13' }, { key: '13-17', label: '13 to 17' }, { key: '18-24', label: '18 to 24' },
+    { key: '25-34', label: '25 to 34' }, { key: '35+', label: '35 and over' }, { key: 'unknown', label: 'Not known' }
+  ];
+
   // The real level walls the 11/10 HQ report named (stop rate, installs of the last 30 days who played)
   var REPORT_WALLS = [{ level: 1, stop: 32.1 }, { level: 7, stop: 30.4 }, { level: 3, stop: 19.2 }];
 
@@ -497,9 +505,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   window.GVT.CAT = {
     FAMILIES: FAMILIES, MODES: MODES, PARKS: PARKS, RAIDS: RAIDS, TIERS: TIERS, FTUE: FTUE, NOTIFS: NOTIFS,
     AD_PLACEMENTS: AD_PLACEMENTS, AD_RULES: AD_RULES, SKUS: SKUS, STORE_FEE: STORE_FEE, SCREENS: SCREENS,
-    PLATFORMS: PLATFORMS, REPORT_WALLS: REPORT_WALLS,
+    PLATFORMS: PLATFORMS, AGES: AGES, REPORT_WALLS: REPORT_WALLS,
     family: byKey(FAMILIES), mode: byKey(MODES), park: byKey(PARKS), raid: byKey(RAIDS), tier: byKey(TIERS),
-    notif: byKey(NOTIFS), placement: byKey(AD_PLACEMENTS), sku: byKey(SKUS), screen: byKey(SCREENS), platform: byKey(PLATFORMS)
+    notif: byKey(NOTIFS), placement: byKey(AD_PLACEMENTS), sku: byKey(SKUS), screen: byKey(SCREENS), platform: byKey(PLATFORMS), age: byKey(AGES)
   };
 })();
 
@@ -782,6 +790,21 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       P.ftue = ftue; P.camp = camp; P.paid = paidEver || P.noads >= 0 ? 1 : 0;
     }
 
+    // ---- age groups (11/24): drawn AFTER play on their own random stream, so every number above stays the same.
+    // The made-up shape: a young crowd (a war-toys game), teens stay longest, adults buy more, 12% with no answer.
+    var RA = rng((opts.seed || 1110) + 131), AGEK = ['u13', '13-17', '18-24', '25-34', '35+', 'unknown'];
+    var nDaysOf = {}, dSeen = {}; sessions.forEach(function (S0) { var k0 = S0.p + ':' + S0.d; if (!dSeen[k0]) { dSeen[k0] = 1; nDaysOf[S0.p] = (nDaysOf[S0.p] || 0) + 1; } });
+    var buyerOf = {}; buys.forEach(function (B0) { buyerOf[B0.p] = 1; });
+    players.forEach(function (P1, pi1) {
+      var w = [30, 28, 14, 10, 6, 12], nd = nDaysOf[pi1] || 0;
+      if (nd >= 6) { w[1] += 18; w[0] += 4; }           // the keenest players skew teen
+      if (buyerOf[pi1]) { w[0] = 4; w[2] += 14; w[3] += 16; w[4] += 8; } // buyers skew adult
+      if (!nd) { w[0] += 10; w[5] += 6; }               // first-minute leavers skew young
+      var tot = 0; w.forEach(function (v) { tot += v; }); var r1 = RA() * tot, a = 0;
+      while (r1 >= w[a] && a < 5) { r1 -= w[a]; a++; }
+      P1.age = AGEK[a];
+    });
+
     // ---- the team: testers who play every day, jump levels and make test purchases.
     // They belong on the team list. Drawn on their own random stream so the players above never change.
     var RT = rng((opts.seed || 1110) + 77), TEAM = opts.team == null ? 5 : opts.team;
@@ -791,7 +814,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     for (var tq = 0; tq < TEAM; tq++) {
       var tpi = players.length, tplat = ['ios', 'ios', 'android', 'ios', 'web'][tq % 5];
       var TP = { uid: (function () { var h2 = ''; for (var z = 0; z < 16; z++) h2 += '0123456789abcdef'[Math.floor(RT() * 16)]; return h2; })(),
-                 name: 'GVT_Tester' + (tq + 1), plat: tplat, lang: 'en', tz: -300, inst: ti(0, 12), push: tplat === 'web' ? 0 : 1, ftue: 8, camp: 0, noads: -1, paid: 1 };
+                 name: 'GVT_Tester' + (tq + 1), plat: tplat, lang: 'en', tz: -300, inst: ti(0, 12), push: tplat === 'web' ? 0 : 1, ftue: 8, camp: 0, noads: -1, paid: 1, age: '25-34' };
       players.push(TP);
       var tcamp = 0;
       for (var td = TP.inst; td < DAYS; td++) {
@@ -941,11 +964,11 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     f = f || {}; var D = ix.data, end = ix.end;
     var range = f.range === 'all' ? D.days : (+f.range || 30);
     var start = Math.max(0, end - range + 1);
-    var plat = f.platform || 'all';
-    var M = core(ix, start, end, plat, true);
+    var plat = f.platform || 'all', age = f.age || 'all';
+    var M = core(ix, start, end, plat, age, true);
     var H = M.headline;
     if (end - start + 1 < MIN_WINDOW) { // a week is too few days to price a player: lifetime value always reads at least 30 days, all from that one window
-      var L = core(ix, Math.max(0, end - MIN_WINDOW + 1), end, plat, true);
+      var L = core(ix, Math.max(0, end - MIN_WINDOW + 1), end, plat, age, true);
       M.money.ltv = L.money.ltv; M.money.ltv.windowDays = L.money.ltv.windowDays;
       H.ltvRetentionFallback = L.headline.retentionFallback;
     } else H.ltvRetentionFallback = H.retentionFallback;
@@ -954,11 +977,12 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     H.ltvKind = 'projected180';
     H.ltvNote = H.ltv == null ? 'Not enough data to price a new player yet.'
       : 'Expected days of play in a new player\'s first 180 days, times money per day of play, both from the last ' + H.ltvWindowDays + ' days.';
-    if (f.range !== 'all' && start - range >= 0) M.prev = core(ix, start - range, start - 1, plat, false).headline;
+    if (f.range !== 'all' && start - range >= 0) M.prev = core(ix, start - range, start - 1, plat, age, false).headline;
     else M.prev = null;
-    M.filters = { range: f.range || 30, platform: plat, start: dateOf(D.day0, start), end: dateOf(D.day0, end), days: end - start + 1 };
+    M.filters = { range: f.range || 30, platform: plat, age: age, start: dateOf(D.day0, start), end: dateOf(D.day0, end), days: end - start + 1 };
     M.windows = windows(M, f.range === 'all', D);
     M.source = { kind: D.source === 'demo' ? 'demo' : 'hq', label: D.source === 'demo' ? 'Example data' : 'HQ player export', asOf: D.asOf };
+    M.ages = ages(ix, start, end, plat);
     M.findings = findings(M);
     return M;
   }
@@ -981,9 +1005,24 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     };
   }
 
-  function core(ix, start, end, plat, full) {
+  // ---- age groups: each group's headline, for the platform filter (never the age filter: every group is shown).
+  // null when no player row carries an age (the export has no 'age' yet). small = too few to read much into.
+  function ages(ix, start, end, plat) {
+    if (!ix.pl.some(function (x) { return x.p.age && x.p.age !== 'unknown'; })) return null;
+    var rows = CAT.AGES.map(function (A) {
+      var c = core(ix, start, end, plat, A.key, false).headline;
+      return { key: A.key, label: A.label, installs: c.installs, active: c.active, activePlayed: c.activePlayed, playedPct: c.playedPct, d1: c.d1, d7: c.d7,
+        retentionFallback: c.retentionFallback, sessionMedian: c.sessionMedian, revenue: c.revenue, revIap: c.revIap, revAds: c.revAds, payers: c.payers, payerPct: c.payerPct,
+        revPerActive: c.revPerActive, small: c.active < 30 };
+    });
+    var act = rows.reduce(function (a, r) { return a + r.active; }, 0), inst = rows.reduce(function (a, r) { return a + r.installs; }, 0);
+    rows.forEach(function (r) { r.activePct = pct(r.active, act); r.installPct = pct(r.installs, inst); });
+    return { rows: rows, active: act, installs: inst, known: rows.filter(function (r) { return r.key !== 'unknown'; }).reduce(function (a, r) { return a + r.active; }, 0) };
+  }
+
+  function core(ix, start, end, plat, age, full) {
     var D = ix.data, CATm = CAT.mode, rate = ix.rate;
-    var inPlat = function (x) { return plat === 'all' || x.p.plat === plat; };
+    var inPlat = function (x) { return (plat === 'all' || x.p.plat === plat) && (age === 'all' || (x.p.age || 'unknown') === age); };
     var all = ix.pl.filter(inPlat);
     var installs = all.filter(function (x) { return x.p.inst >= start && x.p.inst <= end; });
     var playedNew = installs.filter(function (x) { return x.played; });
@@ -1232,7 +1271,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var actSet = {}; act.forEach(function (a) { actSet[a.x.i] = a; });
     M.players = all.map(function (x) {
       var nt = x.nt, a = actSet[x.i];
-      return { i: x.i, uid: x.p.uid, name: x.p.name, plat: x.p.plat, installed: dateOf(D.day0, x.p.inst), lastSeen: dateOf(D.day0, x.last), quiet: x.quiet,
+      return { i: x.i, uid: x.p.uid, name: x.p.name, plat: x.p.plat, age: x.p.age || 'unknown', installed: dateOf(D.day0, x.p.inst), lastSeen: dateOf(D.day0, x.last), quiet: x.quiet,
         status: x.played ? x.status : 'bounced', played: x.played, active: !!a, days: x.nDays, sessions: x.ss.length, minutes: Math.round(x.secs / 60), level: x.p.camp,
         stuck: x.stopped ? x.stuckLv : null, spend: x.usd, adsInt: x.ai, adsRew: x.ar, adQuits: x.adQuit, adRev: x.adRev,
         nSent: nt.length, nOpen: nt.filter(function (t) { return t.r === 'open'; }).length, nDismiss: nt.filter(function (t) { return t.r === 'dismiss'; }).length,
@@ -1257,6 +1296,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     money:    { level: 'yes',    note: 'Purchases and ad revenue (AppLovin MAX) are in HQ today. Sandbox buys and refunds are not separated yet.' },
     notifs:   { level: 'no',     note: 'HQ knows who can get pushes and how they answered a call-out, but never whether a notification was opened or dismissed.' },
     players:  { level: 'partly', note: 'HQ has a row per device with name, level, ads and purchases. Names are not unique, so lookups list every match.' },
+    ages:     { level: 'no',     note: 'GVT never asks a player\'s age, so no player row carries an age group yet.' },
     platforms:{ level: 'no',     note: 'The platform is not attached to player rows today (the 11/10 report shows every device as unknown).' },
     globe:    { level: 'partly', note: 'HQ keeps the Globe map and every attack and verdict, but the game logs Globe fights under the battlefield tag and the report shows none of it.' }
   };
@@ -2124,6 +2164,17 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
           { href: '#notifs', text: 'Notifications →' })
         : none('What players do with notifications', 'None sent', { t: 'No notifications ' + inR, b: 'Try a longer range or all platforms.' }, { href: '#notifs', text: 'Notifications →' }));
     } else cards.push(none('What players do with notifications', 'Not tracked yet', { t: 'HQ never learns whether a notification was opened', b: '<a href="#plan">What HQ needs →</a>' }));
+    // who plays: the age groups (made up in the example data; GVT does not know ages yet)
+    var AG = M.ages;
+    if (AG && AG.active) {
+      var agK = AG.rows.filter(function (x) { return x.key !== 'unknown'; }), agTop = agK.slice().sort(function (a, b) { return b.active - a.active; })[0];
+      var u18 = AG.rows.filter(function (x) { return x.key === 'u13' || x.key === '13-17'; }).reduce(function (a, x) { return a + x.active; }, 0) * 100 / AG.active;
+      var agCard = pic('Who plays', ui.hbars({ labelW: '26%', rows: AG.rows.map(function (x) { return { label: x.label, v: x.activePct || 0, color: x.key === 'unknown' ? GRAY : 'var(--green)', valueLabel: f.pct(x.activePct) }; }) }),
+        '<b>' + f.pct(u18) + ' of players are under 18</b>; the biggest group is ' + agTop.label.toLowerCase() + '.' + (M.source && M.source.kind === 'demo' ? ' <i>(Ages are made up in the example data.)</i>' : ''),
+        { href: '#ages', text: 'Who plays →' });
+      agCard.classList.add('wide');
+      cards.push(agCard);
+    }
     main.appendChild(h('div', { class: 'glance' }, cards));
 
     // ---- 3. the journey of 100 new players ----
@@ -2607,9 +2658,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var d0 = Date.parse(ix.data.day0 + 'T00:00:00Z');
     var s = Math.round((Date.parse(M.filters.start + 'T00:00:00Z') - d0) / 864e5), e = Math.round((Date.parse(M.filters.end + 'T00:00:00Z') - d0) / 864e5);
     if (!isFinite(s) || !isFinite(e)) return null;
-    var plat = M.filters.platform || 'all', g = [], other = [];
+    var plat = M.filters.platform || 'all', age = M.filters.age || 'all', g = [], other = [];
     ix.pl.forEach(function (x) {
-      if (!x.played || (plat !== 'all' && x.p.plat !== plat)) return;
+      if (!x.played || (plat !== 'all' && x.p.plat !== plat) || (age !== 'all' && (x.p.age || 'unknown') !== age)) return;
       var inWin = false, globe = false;
       x.ss.forEach(function (S) { if (S.d < s || S.d > e) return; inWin = true; if (!globe && S.b.some(function (b) { return b.k === 'globe'; })) globe = true; });
       if (inWin) (globe ? g : other).push(x);
@@ -3035,11 +3086,11 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     if (!ix || !ix.data || !ix.data.sessions) return null;
     var D = ix.data, d0 = Date.parse(D.day0 + 'T00:00:00Z');
     var s = Math.round((Date.parse(M.filters.start + 'T00:00:00Z') - d0) / 864e5), e = Math.round((Date.parse(M.filters.end + 'T00:00:00Z') - d0) / 864e5);
-    var plat = M.filters.platform, byEt = [], tzPl = {}, seen = {}, n = 0, players = 0;
+    var plat = M.filters.platform, age = M.filters.age || 'all', byEt = [], tzPl = {}, seen = {}, n = 0, players = 0;
     for (var hr = 0; hr < 24; hr++) byEt.push(0);
     D.sessions.forEach(function (ss) {
       if (ss.d < s || ss.d > e) return;
-      var p = D.players[ss.p]; if (!p || (plat !== 'all' && p.plat !== plat) || p.tz == null) return;
+      var p = D.players[ss.p]; if (!p || (plat !== 'all' && p.plat !== plat) || (age !== 'all' && (p.age || 'unknown') !== age) || p.tz == null) return;
       var et = ((ss.m - p.tz + ET) % 1440 + 1440) % 1440; byEt[Math.floor(et / 60)]++; n++;
       if (!seen[ss.p]) { seen[ss.p] = 1; players++; tzPl[p.tz] = (tzPl[p.tz] || 0) + 1; }
     });
@@ -4824,6 +4875,96 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   G.sections.push({ id: 'players', nav: 'Players', title: 'Players', question: 'Look up any player by name to see how they play, what they spent and how many ads they saw.', area: null, render: render });
 })();
 
+/* ---- sec-ages.js ---- */
+/* GVT War Room · Who plays: the age groups (11/24, Skylar). How old are the players, and does each group stay,
+   play and spend differently? GVT never asks a birthday; the group rides each player row as 'age' (see the
+   Tracking plan). Reads M.ages (engine ages(): one headline per group, for the platform filter, never the age
+   filter). The age filter in the top bar narrows every OTHER page to one group. */
+(function () {
+  'use strict';
+  var G = window.GVT;
+  G.sections = G.sections || [];
+  var GRAY = 'var(--rest)';
+
+  function ok(v) { return v != null && isFinite(v); }
+
+  function render(main, M, ctx) {
+    var ui = ctx.ui, h = ui.h, f = ctx.fmt, A = M.ages, COV = (M.coverage && M.coverage.ages) || { level: 'no', note: '' };
+    var rep = !!ctx.isReport || M.filters.range === 'report', demo = M.source && M.source.kind === 'demo';
+    var range = rep ? 'the last report' : M.filters.range === 'all' ? 'all time' : 'the last ' + M.filters.range + ' days';
+
+    main.appendChild(ui.secHead({ eyebrow: 'Who plays · ' + range, title: 'Who plays',
+      question: 'How old are GVT\'s players, and does each age group stay, play and spend differently?', coverage: { level: COV.level, note: COV.note } }));
+
+    if (!A) {
+      main.appendChild(ui.card({ children: ui.empty({ tag: 'Not tracked yet', title: rep ? 'The daily report has no ages' : 'This data has no age groups',
+        body: 'GVT never asks a player\'s age, so HQ cannot split players by age yet. <a href="#plan">See what HQ needs →</a>' }) }));
+      return;
+    }
+    if (demo) main.appendChild(ui.answer([{ sev: 'warning', pill: 'Made up', html: 'These ages are <b>made up</b>, like all the example data. GVT does not know any player\'s age yet.',
+      sub: 'The page shows what the War Room will do once HQ has an age group for each player. <a href="#plan">See the Tracking plan →</a>' }]));
+
+    var rows = A.rows, known = rows.filter(function (r) { return r.key !== 'unknown' && r.active; });
+    if (!A.active) { main.appendChild(ui.card({ children: ui.empty({ tag: 'No players', title: 'Nobody played in this range', body: 'Try a longer date range or all platforms.' }) })); return; }
+    var col = function (r) { return r.key === 'unknown' ? GRAY : 'var(--green)'; };
+    var top = known.slice().sort(function (a, b) { return b.active - a.active; })[0];
+    var kids = rows.filter(function (r) { return r.key === 'u13'; })[0], teen = rows.filter(function (r) { return r.key === '13-17'; })[0];
+    var under18 = A.active ? ((kids ? kids.active : 0) + (teen ? teen.active : 0)) * 100 / A.active : null;
+    var fair = known.filter(function (r) { return !r.small; });
+    var best = function (k) { return fair.filter(function (r) { return ok(r[k]); }).sort(function (a, b) { return b[k] - a[k]; })[0]; };
+    var stay = best('d7'), spend = best('revPerActive');
+
+    // ---- the answer, in plain words ----
+    var ans = [];
+    if (top) ans.push({ sev: 'info', html: 'The biggest group is <b>' + top.label.toLowerCase() + '</b>: ' + f.pct(top.activePct) + ' of players who played.' + (ok(under18) ? ' <b>' + f.pct(under18) + '</b> are under 18.' : ''),
+      sub: f.num(A.active) + ' players played in ' + range + '. ' + f.pct(rows.filter(function (r) { return r.key === 'unknown'; })[0].activePct) + ' have no age.' });
+    if (stay && fair.length > 1) ans.push({ sev: 'good', pill: 'Stays longest', html: '<b>' + stay.label + '</b> stay longest: ' + f.pct(stay.d7 * 100) + ' of new players are still playing a week later.' });
+    if (spend && fair.length > 1 && spend.revPerActive > 0) ans.push({ sev: 'good', pill: 'Spends most', html: '<b>' + spend.label + '</b> bring in the most money per player: ' + f.money(spend.revPerActive) + ' each.' });
+    if (kids && kids.active && kids.activePct >= 5) ans.push({ sev: 'warning', pill: 'Careful', html: '<b>' + f.pct(kids.activePct) + ' of players are under 13.</b> US children\'s privacy rules (COPPA) limit the ads and data allowed for them.' });
+    if (ans.length) main.appendChild(ui.answer(ans));
+
+    // ---- how old are the players ----
+    var shareBars = ui.hbars({ labelW: '32%', rows: rows.map(function (r) {
+      return { label: r.label, sub: f.num(r.active) + ' players', v: r.activePct || 0, color: col(r), valueLabel: f.pct(r.activePct), tip: '<div class="t">' + ui.esc(r.label) + '</div>' + f.num(r.active) + ' players · ' + f.num(r.installs) + ' new' };
+    }) });
+    main.appendChild(ui.card({ title: 'How old are the players', howto: 'Each bar is the share of everyone who played in ' + range + '.',
+      children: ui.withTable(shareBars, function () {
+        return ui.table({ caption: 'Players by age group', sortable: false, cols: [{ key: 'label', label: 'Age group' }, { key: 'active', label: 'Players', n: 1, fmt: f.num },
+          { key: 'activePct', label: 'Share', n: 1, fmt: function (v) { return f.pct(v); } }, { key: 'installs', label: 'New players', n: 1, fmt: f.num }], rows: rows });
+      }) }));
+
+    // ---- side by side: who stays, who spends ----
+    function compare(title, howto, key, fmt, means) {
+      var rs = rows.filter(function (r) { return r.active; });
+      var bars = ui.hbars({ labelW: '32%', rows: rs.map(function (r) {
+        var v = r[key]; return { label: r.label, sub: r.small ? 'few players, read loosely' : null, v: ok(v) ? v : 0, color: col(r), valueLabel: ok(v) ? fmt(v) : '–' };
+      }) });
+      return ui.card({ title: title, howto: howto, children: bars, means: means });
+    }
+    main.appendChild(h('div', { class: 'grid' },
+      compare('Still playing a week later', 'Of new players who played, the share who played again on day 7.', 'd7', function (v) { return f.pct(v * 100); },
+        stay ? '<b>' + stay.label + '</b> stay longest.' : null),
+      compare('Money per player', 'Ads and purchases in ' + range + ', divided by the players who played.', 'revPerActive', function (v) { return f.money(v); },
+        spend ? '<b>' + spend.label + '</b> bring in the most per player.' : null)));
+
+    // ---- every number, one row per group ----
+    main.appendChild(ui.card({ title: 'Every age group, side by side', howto: '<b>Next day</b> and <b>week later</b>: new players who played and came back. <b>Session</b>: a typical session. <b>Bought</b>: the share who bought something. Tap a column name to sort. Groups under 30 players are marked: a few players more or fewer move their numbers a lot.',
+      children: ui.table({ caption: 'Age groups compared', cols: [
+        { key: 'label', label: 'Age group', fmt: function (v, r) { return ui.esc(v) + (r.small ? ' <span class="pill muted">few players</span>' : ''); } },
+        { key: 'active', label: 'Players', n: 1, fmt: f.num },
+        { key: 'playedPct', label: 'Played 1 min+', n: 1, fmt: function (v) { return f.pct(v); } },
+        { key: 'd1', label: 'Next day', n: 1, fmt: function (v) { return ok(v) ? f.pct(v * 100) : null; } },
+        { key: 'd7', label: 'Week later', n: 1, fmt: function (v) { return ok(v) ? f.pct(v * 100) : null; } },
+        { key: 'sessionMedian', label: 'Session', n: 1, fmt: function (v) { return ok(v) ? f.minutes(v) : null; } },
+        { key: 'payerPct', label: 'Bought', n: 1, fmt: function (v) { return ok(v) ? f.pct(v, v > 0 && v < 10 ? 1 : 0) : null; } },
+        { key: 'revPerActive', label: 'Money each', n: 1, fmt: function (v) { return ok(v) ? f.money(v) : null; } }
+      ], rows: rows }) }));
+    main.appendChild(h('p', { class: 'howto', html: 'To see any other page for one age group, pick it in <b>All ages</b> at the top.' }));
+  }
+
+  G.sections.push({ id: 'ages', nav: 'Who plays', title: 'Who plays', question: 'How old are the players?', area: 'ages', render: render });
+})();
+
 /* ---- sec-team.js ---- */
 /* GVT War Room · Team filter — the team's own accounts, left out of every number.
    The list lives in app.js (shared through the page's database when it has one, otherwise in this browser);
@@ -5055,6 +5196,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       add: 'HQ only, today: total the call-out and Globe answers it already stores. Then <code>push_sent</code> from HQ, <code>push_open</code> and <code>push_dismiss</code> from the phone, <code>notif_permission</code> and <code>local_notif</code>.' },
     { q: 'Player lookup', page: 'players', pageLabel: 'Players', cov: 'players',
       add: 'Platform, language, time zone and the paid flag on /sync. The lookup lists every device that shares a name.' },
+    { q: 'Age groups', page: 'ages', pageLabel: 'Who plays', cov: 'ages',
+      add: 'An <code>age</code> group on each player row (<code>u13</code>, <code>13-17</code>, <code>18-24</code>, <code>25-34</code>, <code>35+</code> or <code>unknown</code>), never a birthday. GVT has no source for it yet. The simplest is one optional tap on an age range (no birthday, no year). Google Analytics can estimate adult age ranges, but only as totals, never per player and never under 18, so it cannot fill this field. Under-13 players bring COPPA rules: check them before storing anything.' },
     { q: 'Platform', page: null, pageLabel: 'Platform filter in the top bar', cov: 'platforms',
       add: '<code>shell</code> (iPhone, Android, Amazon, Steam or web) on /sync and every /tel event. The game already knows it.' }
   ];
@@ -5195,7 +5338,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     { id: 'ads', label: 'Ads', need: ['ads', 'ads.quitAfterAd', 'ads.placements'], report: 'partly', note: 'Ads shown and ad money by day and platform. Not quitting after ads.' },
     { id: 'money', label: 'Money', need: ['money'], report: 'yes', note: 'Purchases, ad money, buyers and lifetime value.' },
     { id: 'notifs', label: 'Notifications', need: ['notifs'], report: 'no', note: 'Opens and swipe-aways are never reported. HQ could total the call-out answers it already stores.' },
-    { id: 'players', label: 'Players', need: ['players'], report: 'no', note: 'The report has totals, not one row per player.' }
+    { id: 'players', label: 'Players', need: ['players'], report: 'no', note: 'The report has totals, not one row per player.' },
+    { id: 'ages', label: 'Who plays', need: ['ages'], report: 'no', note: 'GVT never asks a player\'s age.' }
   ];
   function pick(M, path) { var v = M; path.split('.').forEach(function (k) { v = v == null ? null : v[k]; }); return v; }
   function filled(v) { return v != null && !(Array.isArray(v) && !v.length); }
@@ -5205,7 +5349,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     v: 1, source: 'hq', asOf: '2026-11-20', day0: '2026-07-24', days: 120,
     adRate: { ios: 0.0088, android: 0.0016, rew: 0.0083 },
     players: [
-      { uid: '3f9a0c71d2e84b56', name: 'SneakyBoots12', plat: 'ios', lang: 'en', tz: -300, inst: 112, push: 1, ftue: 7, camp: 11, noads: -1, paid: 1 }
+      { uid: '3f9a0c71d2e84b56', name: 'SneakyBoots12', plat: 'ios', lang: 'en', tz: -300, inst: 112, push: 1, ftue: 7, camp: 11, noads: -1, paid: 1, age: '13-17' }
     ],
     sessions: [
       { p: 0, d: 112, m: 1145, s: 734, src: 'organic', end: 'menu', adAgo: -1, ai: 0, ar: 0, pl: {},
@@ -5252,6 +5396,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     ['Player', 'uid, name, plat, lang, tz', 'Device id, display name, platform, language, time zone in minutes from UTC.', 'envelope, /sync'],
     ['Player', 'inst, push, ftue, camp', 'Install day, notifications on (1/0), furthest first-run step reached, highest campaign level won.', 'install, ftue_step, /sync'],
     ['Player', 'noads, paid', 'Day No Ads was bought (-1 if never), has ever paid (1/0).', '/sync, purchase'],
+    ['Player', 'age', 'Age group: u13, 13-17, 18-24, 25-34, 35+ or unknown. Optional. Never a birthday.', 'not tracked yet'],
     ['Session', 'p, d, m, s, src', 'Which player, which day, start minute on the player\'s clock (0-1439), seconds long, what opened it.', 'session_start, session_end'],
     ['Session', 'end, adAgo', 'The screen when the game was closed, and seconds since the last ad (-1 if none).', 'session_end'],
     ['Session', 'ai, ar, pl, qpl', 'Interstitial and rewarded ads shown, interstitials by placement, the placement of the ad they quit on.', 'ad_opportunity'],
@@ -5485,10 +5630,10 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   var G = window.GVT, ui = G.ui, h = ui.h, E = G.engine, CAT = G.CAT;
   G.sections = G.sections || [];
 
-  var ORDER = ['briefing', 'stop', 'modes', 'time', 'ads', 'money', 'notifs', 'players', 'team', 'plan'];
-  var state = { source: 'demo', raw: null, data: null, ix: null, report: null, reportFile: '', reportName: '', filters: { range: 30, platform: 'all' }, M: null };
-  var goodFilters = { range: 30, platform: 'all' }; // the last filters that drew without an error
-  var REPORT_FIXED = 'The daily report covers fixed windows, so the range and platform filters are off.';
+  var ORDER = ['briefing', 'stop', 'modes', 'time', 'ads', 'money', 'notifs', 'players', 'ages', 'team', 'plan'];
+  var state = { source: 'demo', raw: null, data: null, ix: null, report: null, reportFile: '', reportName: '', filters: { range: 30, platform: 'all', age: 'all' }, M: null };
+  var goodFilters = { range: 30, platform: 'all', age: 'all' }; // the last filters that drew without an error
+  var REPORT_FIXED = 'The daily report covers fixed windows, so the range, platform and age filters are off.';
 
   function sections() { return ORDER.map(function (id) { return G.sections.filter(function (s) { return s.id === id; })[0]; }).filter(Boolean); }
   function secById(id) { return sections().filter(function (s) { return s.id === id; })[0] || null; }
@@ -5620,6 +5765,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var plat = h('select', { class: 'sel', id: 'platform', 'aria-label': 'Platform', disabled: isRep || null, title: isRep ? REPORT_FIXED : null, on: { change: function (e) { state.filters.platform = e.target.value; refresh(); } } },
       h('option', { value: 'all', text: 'All platforms' }), CAT.PLATFORMS.map(function (p) { return h('option', { value: p.key, text: p.label }); }));
     plat.value = state.filters.platform;
+    var ageSel = h('select', { class: 'sel', id: 'age', 'aria-label': 'Age group', disabled: isRep || null, title: isRep ? REPORT_FIXED : null, on: { change: function (e) { state.filters.age = e.target.value; refresh(); } } },
+      h('option', { value: 'all', text: 'All ages' }), CAT.AGES.map(function (a) { return h('option', { value: a.key, text: a.label }); }));
+    ageSel.value = state.filters.age;
     var file = h('input', { type: 'file', id: 'report-file', accept: '.html,.htm,.json,text/html,application/json', class: 'sr', tabindex: '-1', 'aria-hidden': 'true', on: { change: onFile } });
     var srcBtn = isRep
       ? h('button', { type: 'button', class: 'btn', id: 'to-demo', on: { click: function () { state.source = 'demo'; refresh(); } } }, 'Back to example data')
@@ -5629,7 +5777,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     return h('div', { class: 'bar' }, h('div', { class: 'bar-in' },
       h('a', { class: 'mark', href: '#briefing', 'aria-label': 'GVT War Room, back to the briefing' }, h('b', { html: 'GVT <span>War Room</span>' }), h('i', { text: 'Player analytics' })),
       srcChip(false), teamChip(),
-      h('div', { class: 'controls' }, seg, plat, srcBtn, file)));
+      h('div', { class: 'controls' }, seg, plat, ageSel, srcBtn, file)));
   }
   // which data is on screen, in two words (the bar and the phone tab strip both carry it, so it never scrolls away)
   function srcKind() { return state.source === 'report' ? 'report' : state.M && state.M.source && state.M.source.kind === 'hq' ? 'hq' : 'demo'; }
@@ -5701,9 +5849,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var a = document.activeElement, fid = a && a !== document.body && a.id ? a.id : null, sel = null;
     if (fid && a.tagName === 'INPUT') { try { sel = [a.selectionStart, a.selectionEnd]; } catch (e) { sel = null; } }
     var prevM = state.M;
-    try { compute(); goodFilters = { range: state.filters.range, platform: state.filters.platform }; }
+    try { compute(); goodFilters = { range: state.filters.range, platform: state.filters.platform, age: state.filters.age }; }
     catch (err) {
-      state.M = prevM; state.filters.range = goodFilters.range; state.filters.platform = goodFilters.platform;
+      state.M = prevM; state.filters.range = goodFilters.range; state.filters.platform = goodFilters.platform; state.filters.age = goodFilters.age;
       render(); alert2('Those numbers could not be worked out (' + (err && err.message || err) + ').'); return;
     }
     render();
@@ -5729,7 +5877,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
           var fil = E.team.apply(obj, team.off ? [] : team.entries); ix = E.index(fil.data); M = E.model(ix, state.filters);
         } catch (err) { alert2('That player export could not be read (' + (err && err.message || err) + '). The numbers on screen have not changed.'); return; }
         state.raw = obj; applyTeam(); state.M = E.model(state.ix, state.filters); state.reportName = f.name; state.source = 'demo';
-        goodFilters = { range: state.filters.range, platform: state.filters.platform };
+        goodFilters = { range: state.filters.range, platform: state.filters.platform, age: state.filters.age };
         render(); return;
       }
       var rep, RM;
