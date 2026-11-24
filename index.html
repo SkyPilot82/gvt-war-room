@@ -9,52 +9,56 @@
 /* GVT War Room · style.css
    Layout: a command bar on top (wordmark, data source, filters), the sections down a left rail on wide screens
    and as a scrolling tab strip on phones; each section reads top-down: the question, the answer, then the evidence. */
+/* palette (11/24 readability pass): plain neutral surfaces and near-black ink so text reads at a glance;
+   the three ways to play wear the validated categorical slots blue / orange / aqua (token names kept so every
+   chart follows). The GVT green stays as the brand accent for buttons and the wordmark. */
 :root {
-  /* palette: olive-tinted neutrals; the two armies (green, tan) carry the main split, blue marks co-op */
-  --page: #eef1e8;
-  --surface: #fbfcf8;
-  --surface-2: #f4f6ef;
-  --ink: #1a2016;
-  --ink-2: #4a5343;
-  --muted: #747d6c;
-  --line: #dce1d3;
-  --line-2: #c7cebc;
-  --green: #3d6e2a;      /* the Green army: solo play, the brand */
-  --tan: #a87a2c;        /* the Tan army: player vs player */
-  --blue: #3f78b5;       /* with friends (co-op) */
-  --accent: #3d6e2a;
-  --accent-ink: #2f5720;
-  --accent-wash: #e3ead9;
-  --tan-wash: #f2e8d6;
-  --good: #0ca30c; --good-ink: #146b14; --good-wash: #e2f1dc;
-  --warn: #fab219; --warn-ink: #8a5a00; --warn-wash: #fbf0d5;
-  --crit: #d03b3b; --crit-ink: #a72a2a; --crit-wash: #f8e1de;
-  --info-ink: #2f5d8f; --info-wash: #e1eaf4;
-  --grid: #e3e7db;
-  --axis: #c3c9b8;
-  --shadow: 0 1px 2px rgba(26, 32, 22, .06), 0 2px 10px rgba(26, 32, 22, .04);
+  --page: #f3f4f1;
+  --surface: #ffffff;
+  --surface-2: #f4f5f2;
+  --ink: #111410;
+  --ink-2: #3b3f38;
+  --muted: #5f645b;
+  --line: #e1e3dc;
+  --line-2: #c9ccc2;
+  --green: #2a78d6;      /* solo vs computer (and the default single-series colour) */
+  --tan: #eb6834;        /* player vs player */
+  --blue: #1baf7a;       /* with friends (co-op) */
+  --brand: #3d6e2a;      /* GVT green: wordmark and buttons */
+  --accent: #2f6b1f;
+  --accent-ink: #1c5cab;  /* links */
+  --accent-wash: #e6efdf;
+  --tan-wash: #fff4d6;
+  --good: #0ca30c; --good-ink: #0b6b0b; --good-wash: #e0f3dc;
+  --warn: #fab219; --warn-ink: #7a4f00; --warn-wash: #fff1cf;
+  --crit: #d03b3b; --crit-ink: #a52222; --crit-wash: #fde4e1;
+  --info-ink: #1c5cab; --info-wash: #e2edfb;
+  --grid: #e8e9e4;
+  --axis: #c3c2b7;
+  --rest: #c9ccc2;       /* 'the rest' in a chart: context, not news */
+  --shadow: 0 1px 2px rgba(17, 20, 16, .06), 0 2px 10px rgba(17, 20, 16, .04);
   /* type */
   --display: "Big Shoulders Stencil Display", "Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
   --body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --fs-xs: 11.5px; --fs-sm: 13px; --fs-md: 15px; --fs-lg: 18px; --fs-xl: 24px; --fs-2xl: 34px; --fs-hero: 56px;
-  --r: 10px; --r-sm: 6px;
+  --fs-xs: 12px; --fs-sm: 14px; --fs-md: 15.5px; --fs-lg: 18px; --fs-xl: 26px; --fs-2xl: 32px; --fs-hero: 56px;
+  --r: 12px; --r-sm: 8px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --page: #0f120c; --surface: #161a12; --surface-2: #1c2117; --ink: #eef1e6; --ink-2: #bcc4b0; --muted: #8b937f;
-    --line: #2a3122; --line-2: #39412f; --green: #4a8a3a; --tan: #c3833a; --blue: #5d95de; --accent: #7fb35f; --accent-ink: #9ccb7c;
-    --accent-wash: #1f2a18; --tan-wash: #2b2216; --good-ink: #5fcf5f; --good-wash: #15260f; --warn-ink: #f2c04e; --warn-wash: #2b2410;
-    --crit-ink: #f08a8a; --crit-wash: #2f1615; --info-ink: #8ab7ea; --info-wash: #152233; --grid: #232a1c; --axis: #3a4230;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321; --ink: #ffffff; --ink-2: #d6d5cc; --muted: #a3a29a;
+    --line: #2c2c2a; --line-2: #3d3d3a; --green: #3987e5; --tan: #d95926; --blue: #199e70; --brand: #6fae55; --accent: #6fae55; --accent-ink: #7fb4f0;
+    --accent-wash: #1f2a18; --tan-wash: #2b2410; --good-ink: #5fcf5f; --good-wash: #15260f; --warn-ink: #f2c04e; --warn-wash: #2b2410;
+    --crit-ink: #f08a8a; --crit-wash: #2f1615; --info-ink: #8ab7ea; --info-wash: #152233; --grid: #2c2c2a; --axis: #383835; --rest: #6b6b66;
     --shadow: 0 1px 2px rgba(0, 0, 0, .4); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --page: #0f120c; --surface: #161a12; --surface-2: #1c2117; --ink: #eef1e6; --ink-2: #bcc4b0; --muted: #8b937f;
-  --line: #2a3122; --line-2: #39412f; --green: #4a8a3a; --tan: #c3833a; --blue: #5d95de; --accent: #7fb35f; --accent-ink: #9ccb7c;
-  --accent-wash: #1f2a18; --tan-wash: #2b2216; --good-ink: #5fcf5f; --good-wash: #15260f; --warn-ink: #f2c04e; --warn-wash: #2b2410;
-  --crit-ink: #f08a8a; --crit-wash: #2f1615; --info-ink: #8ab7ea; --info-wash: #152233; --grid: #232a1c; --axis: #3a4230;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321; --ink: #ffffff; --ink-2: #d6d5cc; --muted: #a3a29a;
+  --line: #2c2c2a; --line-2: #3d3d3a; --green: #3987e5; --tan: #d95926; --blue: #199e70; --brand: #6fae55; --accent: #6fae55; --accent-ink: #7fb4f0;
+  --accent-wash: #1f2a18; --tan-wash: #2b2410; --good-ink: #5fcf5f; --good-wash: #15260f; --warn-ink: #f2c04e; --warn-wash: #2b2410;
+  --crit-ink: #f08a8a; --crit-wash: #2f1615; --info-ink: #8ab7ea; --info-wash: #152233; --grid: #2c2c2a; --axis: #383835; --rest: #6b6b66;
   --shadow: 0 1px 2px rgba(0, 0, 0, .4); color-scheme: dark;
 }
 
@@ -75,13 +79,13 @@ p { margin: 0; }
 .bar-in { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 20px; max-width: 1480px; margin: 0 auto; }
 .mark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: var(--ink); }
 .mark b { font: 800 26px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
-.mark b span { color: var(--tan); }
+.mark b span { color: var(--brand); }
 .mark i { font: 600 var(--fs-xs)/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-style: normal; }
 /* which data is on screen, next to the wordmark (and pinned in the phone tab strip) */
-.src-chip { display: inline-flex; align-items: center; font: 700 var(--fs-xs)/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 5px 8px; border-radius: 4px; white-space: nowrap; background: var(--tan); color: #fff; }
+.src-chip { display: inline-flex; align-items: center; font: 700 var(--fs-xs)/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 5px 8px; border-radius: 4px; white-space: nowrap; background: var(--warn-ink); color: #fff; }
 .src-chip.real { background: var(--accent); }
-:root[data-theme="dark"] .src-chip { color: #0f120c; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .src-chip { color: #0f120c; } }
+:root[data-theme="dark"] .src-chip, :root[data-theme="dark"] .source b { color: #0f120c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .src-chip, :root:not([data-theme="light"]) .source b { color: #0f120c; } }
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
 .seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; background: var(--surface); }
 .seg button { border: 0; background: transparent; padding: 6px 11px; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-2); cursor: pointer; min-height: 34px; }
@@ -100,7 +104,7 @@ p { margin: 0; }
 .source { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 20px; font-size: var(--fs-sm); border-bottom: 1px solid var(--line); }
 .source.demo { background: var(--tan-wash); color: var(--ink); }
 .source.report { background: var(--accent-wash); }
-.source b { font: 700 var(--fs-xs)/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; background: var(--tan); color: #fff; }
+.source b { font: 700 var(--fs-xs)/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; background: var(--warn-ink); color: #fff; }
 .source.report b { background: var(--accent); }
 .source .grow { flex: 1 1 260px; color: var(--ink-2); }
 
@@ -134,8 +138,8 @@ main [id] { scroll-margin-top: 76px; } /* #money-calc and friends land below the
 /* ---- section anatomy ---- */
 .sec-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 20px; }
 .sec-head .t { flex: 1 1 420px; display: flex; flex-direction: column; gap: 6px; }
-.eyebrow { font: 600 var(--fs-xs)/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.sec-head h1 { font: 800 var(--fs-2xl)/1.02 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+.eyebrow { font: 700 var(--fs-sm)/1.2 var(--body); letter-spacing: .02em; color: var(--muted); }
+.sec-head h1 { font: 800 var(--fs-2xl)/1.1 var(--body); letter-spacing: -.015em; }
 .sec-head .q { color: var(--ink-2); font-size: var(--fs-lg); max-width: 62ch; }
 .cov { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); border-radius: 999px; padding: 5px 12px 5px 8px; font-size: var(--fs-sm); background: var(--surface); max-width: 100%; }
 .cov i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 700 11px/1 var(--body); font-style: normal; color: #fff; flex: none; }
@@ -176,8 +180,8 @@ main [id] { scroll-margin-top: 76px; } /* #money-calc and friends land below the
 /* stat tiles */
 .tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
 .tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.tile .l { font: 600 var(--fs-xs)/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); min-height: 2.4em; } /* room for two lines, so values line up across a row */
-.tile .v { font: 750 var(--fs-xl)/1.1 var(--body); letter-spacing: -.01em; }
+.tile .l { font: 650 var(--fs-sm)/1.25 var(--body); color: var(--ink-2); min-height: 2.5em; } /* room for two lines, so values line up across a row */
+.tile .v { font: 800 var(--fs-xl)/1.1 var(--body); letter-spacing: -.015em; }
 .tile .v.big { font-size: 30px; }
 .tile .s { font-size: var(--fs-sm); color: var(--ink-2); }
 .tile .tr { font-size: var(--fs-xs); font-weight: 650; display: inline-flex; gap: 4px; align-items: center; }
@@ -189,14 +193,14 @@ main [id] { scroll-margin-top: 76px; } /* #money-calc and friends land below the
 .meter .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--green); }
 .meter .goal { position: absolute; top: -7px; bottom: -7px; width: 2px; background: var(--ink); }
 .meter .goal span { position: absolute; top: -18px; transform: translateX(-50%); font: 700 var(--fs-xs)/1 var(--mono); white-space: nowrap; color: var(--ink); }
-.meter-scale { display: flex; justify-content: space-between; font: 500 var(--fs-xs)/1 var(--mono); color: var(--muted); margin-top: 6px; }
+.meter-scale { display: flex; justify-content: space-between; font: 500 var(--fs-xs)/1 var(--body); color: var(--ink-2); margin-top: 6px; }
 
 /* charts */
 .chart { position: relative; margin-top: 12px; }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
-.chart svg text { fill: var(--muted); font: 500 11px var(--body); }
-.chart svg text.lab { fill: var(--ink); font-weight: 650; font-size: 11.5px; }
-.chart svg text.lab2 { fill: var(--ink-2); font-size: 11px; }
+.chart svg text { fill: var(--ink-2); font: 500 12px var(--body); }
+.chart svg text.lab { fill: var(--ink); font-weight: 650; font-size: 12.5px; }
+.chart svg text.lab2 { fill: var(--ink-2); font-size: 12px; }
 .chart svg .gridl { stroke: var(--grid); stroke-width: 1; }
 .chart svg .axisl { stroke: var(--axis); stroke-width: 1; }
 .chart .hit { cursor: crosshair; }
@@ -297,6 +301,44 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
 .sec-team .team-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--warn-wash); color: var(--ink); font-size: var(--fs-sm); }
 .sec-team .team-matches .was { color: var(--muted); font-size: var(--fs-xs); }
 @media (max-width: 1480px) { .mark i { display: none; } }
+
+/* ---- the Briefing's picture cards (11/24): a donut or two bars, its legend with the numbers, one plain sentence ---- */
+.glance { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); }
+.glance .card { display: flex; flex-direction: column; gap: 10px; }
+.glance .say { font-size: var(--fs-md); color: var(--ink); max-width: 60ch; }
+.glance .say b { font-weight: 750; }
+.glance .more { margin-top: auto; font-size: var(--fs-sm); font-weight: 650; }
+.donut { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+.donut svg { width: 168px; height: 168px; flex: none; display: block; }
+.donut svg path { stroke: var(--surface); stroke-width: 2; }
+.donut svg .c1 { font: 800 30px var(--body); fill: var(--ink); }
+.donut svg .c2 { font: 600 12px var(--body); fill: var(--ink-2); }
+.donut ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; flex: 1 1 170px; min-width: 0; }
+.donut li { display: grid; grid-template-columns: 14px max-content minmax(0, 1fr); gap: 2px 10px; align-items: baseline; font-size: var(--fs-sm); }
+.donut li i { width: 14px; height: 14px; border-radius: 4px; align-self: center; }
+.donut li b { font: 800 var(--fs-lg)/1 var(--body); font-variant-numeric: tabular-nums; }
+.donut li span { color: var(--ink-2); }
+.donut li small { grid-column: 2 / -1; color: var(--muted); font-size: var(--fs-xs); }
+.pair { display: flex; flex-direction: column; gap: 12px; }
+.pair .r { display: grid; grid-template-columns: minmax(0, 1fr) 54px; gap: 4px 12px; align-items: center; }
+.pair .r span { grid-column: 1 / -1; font-size: var(--fs-sm); color: var(--ink-2); }
+.pair .tk { height: 26px; background: var(--surface-2); border-radius: 0 6px 6px 0; }
+.pair .tk div { height: 100%; border-radius: 0 6px 6px 0; }
+.pair .r b { font: 800 var(--fs-lg)/1 var(--body); text-align: right; font-variant-numeric: tabular-nums; }
+.kpis { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1099px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .kpis { gap: 8px; } .kpis .tile { padding: 12px; } .kpis .tile .v { font-size: 28px; } }
+.kpis .tile .v { font-size: 34px; }
+.kpis .tile .l { min-height: 0; }
+.todo { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; }
+.todo li { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 12px; padding: 12px 0; border-top: 1px solid var(--line); align-items: start; }
+.todo li:first-child { border-top: 0; }
+.todo li a.t { color: var(--ink); text-decoration: none; font-weight: 700; }
+.todo li a.t:hover { text-decoration: underline; }
+.todo li > .pill { grid-column: 1; grid-row: 1; margin-top: 1px; }
+.todo li > a.t { grid-column: 2; }
+.todo li > .try { grid-column: 2; font-size: var(--fs-sm); color: var(--ink-2); }
+.kpis .tile.na .v { font-size: var(--fs-lg); }
 
 </style>
 </head><body>
@@ -1912,285 +1954,206 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     return h('div', null, bar, keys);
   }
 
+  // a donut: parts [{label, v, color, note?}] with the centre saying o.center / o.centerSub, and a legend that carries
+  // every number (so no part is told by colour alone). Hover a slice or a legend row for the exact count.
+  function donut(o) {
+    var parts = o.parts.filter(function (p) { return (p.v || 0) > 0; }), tot = parts.reduce(function (a, p) { return a + p.v; }, 0);
+    var R = 80, r = 52, cx = 84, cy = 84, a0 = -Math.PI / 2, paths = '';
+    function pt(rad, a) { return (cx + rad * Math.cos(a)).toFixed(2) + ' ' + (cy + rad * Math.sin(a)).toFixed(2); }
+    parts.forEach(function (p, i) {
+      var f = p.v / tot, a1 = a0 + f * Math.PI * 2, big = f > 0.5 ? 1 : 0;
+      if (f >= 0.9999) paths += '<path data-i="' + i + '" fill="' + p.color + '" d="M ' + pt(R, a0) + ' A ' + R + ' ' + R + ' 0 1 1 ' + pt(R, a0 + Math.PI) + ' A ' + R + ' ' + R + ' 0 1 1 ' + pt(R, a0) + ' Z M ' + pt(r, a0) + ' A ' + r + ' ' + r + ' 0 1 0 ' + pt(r, a0 + Math.PI) + ' A ' + r + ' ' + r + ' 0 1 0 ' + pt(r, a0) + ' Z" fill-rule="evenodd"/>';
+      else paths += '<path data-i="' + i + '" fill="' + p.color + '" d="M ' + pt(R, a0) + ' A ' + R + ' ' + R + ' 0 ' + big + ' 1 ' + pt(R, a1) + ' L ' + pt(r, a1) + ' A ' + r + ' ' + r + ' 0 ' + big + ' 0 ' + pt(r, a0) + ' Z"/>';
+      p._f = f; a0 = a1;
+    });
+    var fmt = o.fmt || function (v) { return F().num(v); };
+    var svg = svgEl('<svg viewBox="0 0 168 168" role="img" aria-label="' + esc(o.label || '') + '">' + paths +
+      (o.center ? '<text class="c1" x="84" y="' + (o.centerSub ? 88 : 95) + '" text-anchor="middle"' + (String(o.center).length > 5 ? ' style="font-size:' + (String(o.center).length > 6 ? 21 : 25) + 'px"' : '') + '>' + esc(o.center) + '</text>' : '') +
+      (o.centerSub ? '<text class="c2" x="84" y="107" text-anchor="middle">' + esc(o.centerSub) + '</text>' : '') + '</svg>');
+    var tipFor = function (i) { var p = parts[i]; return '<div class="t">' + esc(p.label) + '</div>' + Math.round(p._f * 100) + '% · ' + esc(fmt(p.v)); };
+    bindTips(svg, 'path', tipFor);
+    var list = h('ul', null, parts.map(function (p, i) {
+      var li = h('li', null, h('i', { style: { background: p.color } }), h('b', { text: Math.round(p._f * 100) + '%' }), h('span', { text: p.label }),
+        h('small', { text: fmt(p.v) + (p.note ? ' · ' + p.note : '') }));
+      tipOn(li, function () { return tipFor(i); });
+      return li;
+    }));
+    return h('div', { class: 'donut' }, svg, list);
+  }
+  // two (or a few) bars to compare one share side by side: rows [{label, v (0-100), color}]
+  function pair(o) {
+    var max = o.max || Math.max.apply(null, o.rows.map(function (x) { return x.v; })) * 1.1 || 1;
+    return h('div', { class: 'pair', role: 'img', 'aria-label': o.label || '' }, o.rows.map(function (x) {
+      return h('div', { class: 'r' }, h('span', { text: x.label }),
+        h('div', { class: 'tk' }, h('div', { style: { width: Math.min(100, x.v * 100 / max).toFixed(1) + '%', background: x.color || 'var(--green)' } })),
+        h('b', { text: o.fmt ? o.fmt(x.v) : Math.round(x.v) + '%' }));
+    }));
+  }
+
   window.GVT.ui = { h: h, add: add, esc: esc, tip: tip, coverage: coverage, secHead: secHead, pill: pill, answer: answer, card: card, empty: empty, legend: legend,
     trend: trend, tile: tile, tiles: tiles, tipOn: tipOn, meter: meter, table: table, withTable: withTable, lazy: lazy, drawAll: drawAll,
-    columns: columns, hbars: hbars, line: line, stacked: stacked, heatmap: heatmap, funnel: funnel, split: split, niceMax: niceMax,
+    columns: columns, hbars: hbars, line: line, stacked: stacked, heatmap: heatmap, funnel: funnel, split: split, donut: donut, pair: pair, niceMax: niceMax,
     COLORS: { pve: 'var(--green)', pvp: 'var(--tan)', coop: 'var(--blue)' } };
 })();
 
 /* ---- sec-briefing.js ---- */
 /* GVT War Room · the Briefing: the first page anyone sees. Answers "how is GVT doing and what do we fix first?"
-   in plain words: the value of a new player, one short answer card per big question, what to fix, then the key
-   numbers. Every card links to the section with the evidence. */
+   Read top-down (11/24 readability pass, Skylar: "the key numbers at the top", "easier to read"):
+   the key numbers, then one picture per big question (each with one plain sentence and a link to its page),
+   the journey of 100 new players, then the short list of what to fix and what is working. */
 (function () {
   'use strict';
   var G = window.GVT;
   G.sections = G.sections || [];
 
-  // the HQ-tracked chip: the same three labels as ui.coverage, small enough for a card footer
-  var COV = { yes: ['✓', 'Tracked in HQ'], partly: ['!', 'Partly tracked'], no: ['✕', 'Not tracked yet'] };
-  function covChip(h, c) {
-    c = c || { level: 'no' }; var w = COV[c.level] || COV.no;
-    return h('span', { class: 'cov ' + (COV[c.level] ? c.level : 'no'), title: c.note || null, style: { padding: '3px 9px 3px 5px', 'font-size': 'var(--fs-xs)', gap: '6px' } },
-      h('i', { 'aria-hidden': 'true', style: { width: '15px', height: '15px', 'font-size': '9px' }, text: w[0] }), h('span', null, h('b', { style: { 'font-weight': '650' }, text: w[1] })));
-  }
-  // which line of M.coverage a finding rests on
-  function findingCov(x) {
-    if (x.cov) return x.cov;
-    if (x.area === 'stop') return /first-run step/i.test(x.title) ? 'funnel' : /first minute/i.test(x.title) ? 'headline' : 'wall';
-    if (x.area === 'modes' && /globe/i.test(x.title)) return 'globe';
-    if (x.area === 'modes' && /raid/i.test(x.title)) return 'raids';
-    return x.area;
-  }
   function cap(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
   function ok(v) { return v != null && isFinite(v); }
+  var GRAY = 'var(--rest)'; // "the rest": a part that is context, not news
 
   function render(main, M, ctx) {
     var ui = ctx.ui, h = ui.h, f = ctx.fmt, H = M.headline, P = M.prev || {}, rep = !!ctx.isReport || M.filters.range === 'report';
-    var W = M.windows || {}, COVS = M.coverage || {};
+    var W = M.windows || {};
     var range = rep ? 'the last report' : M.filters.range === 'all' ? 'all time' : 'the last ' + M.filters.range + ' days';
     var inR = M.filters.range === 'all' ? 'so far' : 'in ' + range;
     var pct1 = function (v) { return f.pct(v, ok(v) && v > 0 && v < 10 ? 1 : 0); };
-    var times = function (r) { return r >= 10 ? Math.round(r) + ' times' : r.toFixed(1) + ' times'; };
 
     main.appendChild(ui.secHead({ eyebrow: 'Briefing · ' + range, title: 'How GVT is doing',
-      question: 'What a new player is worth, short answers to the big questions, and what to fix first. Every card links to the evidence behind it.' }));
+      question: 'The key numbers first, then a picture for each big question. Tap any card for the detail behind it.' }));
     var TM = ctx.team;
     if (TM && !ctx.isReport) {
-      if (!TM.entries.length && !TM.hidden.length) main.appendChild(ui.answer([{ sev: 'warning', pill: 'Team counted', html: 'The <b>team list is empty</b>, so the team\'s own testing counts in every number below.', sub: '<a href="#team">Add teammates in the Team filter</a> to leave them out.' }]));
-      else if (TM.off) main.appendChild(ui.answer([{ sev: 'warning', pill: 'Team counted', html: 'You are <b>including the team</b> right now, so these numbers count their testing.', sub: '<a href="#team">Leave them out again in the Team filter</a>.' }]));
-      else if (!TM.hidden.length) main.appendChild(ui.answer([{ sev: 'warning', pill: 'Team counted', html: 'The team list <b>matches no player</b>, so the team\'s testing still counts.', sub: '<a href="#team">Check the spellings in the Team filter</a>.' }]));
+      if (!TM.entries.length && !TM.hidden.length) main.appendChild(ui.answer([{ sev: 'warning', pill: 'Team counted', html: 'The team\'s own test accounts are counted in these numbers. <a href="#team">Leave them out in the Team filter</a>.' }]));
+      else if (TM.off) main.appendChild(ui.answer([{ sev: 'warning', pill: 'Team counted', html: 'You are <b>including the team</b> right now. <a href="#team">Leave them out again</a>.' }]));
+      else if (!TM.hidden.length) main.appendChild(ui.answer([{ sev: 'warning', pill: 'Team counted', html: 'The team list <b>matches no player</b>, so the team still counts. <a href="#team">Check the spellings</a>.' }]));
     }
 
-    // ---- the headline: what a new player is worth vs the $1 goal ----
-    var ltv = H.ltv, goal = H.goal || 1, steady = H.ltvKind === 'steady';
-    var hero = ui.card({ cls: 'hero', title: 'What a new player is worth' });
+    // ---- 1. the key numbers ----
+    var tr = ui.trend, rolling = H.retentionKind === 'rolling', noSess = H.sessionMedian == null;
+    var sub = function (txt, win) { return rep && win ? cap(win) + '. ' + txt : txt; };
+    var ltv = H.ltv, goal = H.goal || 1;
+    main.appendChild(h('h2', { class: 'eyebrow', text: rep ? 'Key numbers from the report' : 'Key numbers for ' + (/^last /.test(W.installs || '') ? 'the ' + W.installs : W.installs || range) }));
+    main.appendChild(h('div', { class: 'kpis' }, [
+      { label: 'New players', value: f.num(H.installs), sub: sub('New devices that opened GVT.', W.installs), trend: tr(H.installs, P.installs) },
+      { label: 'Players a day', value: f.num(H.dauAvg), sub: 'On average. ' + f.num(H.active) + ' different players in all.', trend: tr(H.dauAvg, P.dauAvg) },
+      rolling
+        ? { label: 'Came back after day 1', value: f.pct(ok(H.d1) ? H.d1 * 100 : null), sub: 'Of new players who played.' }
+        : { label: 'Came back the next day', value: f.pct(ok(H.d1) ? H.d1 * 100 : null), sub: 'Of new players who played.', trend: tr(H.d1, P.d1, { points: true, scale: 100 }) },
+      rolling
+        ? { label: 'Still playing a week later', value: f.pct(ok(H.d7) ? H.d7 * 100 : null), sub: 'Played on day 7 or later.' }
+        : { label: 'Still playing a week later', value: f.pct(ok(H.d7) ? H.d7 * 100 : null), sub: 'Played on day 7.', trend: tr(H.d7, P.d7, { points: true, scale: 100 }) },
+      { label: rep ? 'Money earned, all time' : 'Money earned', value: f.money(H.revenue), sub: sub('Ads ' + f.money(H.revAds) + ' · purchases ' + f.money(H.revIap) + '.', W.revenue), trend: tr(H.revenue, P.revenue) },
+      { label: 'A new player is worth', value: ok(ltv) ? f.money(ltv) : '–', sub: ok(ltv) ? 'Goal ' + f.money(goal) + '. ' + Math.round(ltv * 100 / goal) + '% of the way there.' : 'Not enough data yet.' },
+      { label: rep ? 'Buyers, all time' : 'Buyers', value: f.num(H.payers), sub: (ok(H.payerPct) ? pct1(H.payerPct) : '–') + ' of players bought something.', trend: tr(H.payers, P.payers) },
+      rep
+        ? { label: 'Typical session', na: noSess, value: f.minutes(H.sessionMedian), sub: 'Half of sessions are shorter.', naSub: 'HQ does not record session length yet.' }
+        : { label: 'Typical session', value: f.minutes(H.sessionMedian), sub: noSess ? 'No sessions in this period.' : 'Half of sessions are shorter.', trend: tr(H.sessionMedian, P.sessionMedian) }
+    ].map(ui.tile)));
+    if (M.prev) main.appendChild(h('p', { class: 'howto', text: '▲ ▼ compare with the same number of days just before. Green is good news, red is bad news.' }));
+
+    // ---- 2. one picture per big question ----
+    main.appendChild(h('h2', { class: 'eyebrow', style: { 'margin-top': '8px' }, text: 'At a glance' }));
+    var cards = [];
+    function pic(title, chart, say, link) {
+      return ui.card({ title: title, children: [chart, say ? h('p', { class: 'say', html: say }) : null, link ? h('a', { class: 'more', href: link.href, text: link.text }) : null] });
+    }
+    function none(title, tag, body, link) { return pic(title, ui.empty({ tag: tag, title: body.t, body: body.b }), null, link); }
+
+    // what happens to new players
+    if (H.installs && ok(H.played)) {
+      var back1 = ok(H.d1) && !rolling ? Math.round(H.played * H.d1) : null;
+      var parts = back1 != null
+        ? [{ label: 'Left in the first minute', v: H.installs - H.played, color: 'var(--tan)' },
+           { label: 'Played, but not the next day', v: H.played - back1, color: GRAY },
+           { label: 'Came back the next day', v: back1, color: 'var(--green)' }]
+        : [{ label: 'Left in the first minute', v: H.installs - H.played, color: 'var(--tan)' },
+           { label: 'Played a full minute', v: H.played, color: 'var(--green)' }];
+      cards.push(pic('What happens to new players', ui.donut({ parts: parts, center: f.num(H.installs), centerSub: 'new players', fmt: function (v) { return f.num(v) + ' players'; }, label: 'What happens to ' + f.num(H.installs) + ' new players' }),
+        '<b>' + f.pct(H.bouncePct) + ' leave in the first minute.</b> That first minute is the first thing to fix.', { href: '#stop', text: 'Where they stop →' }));
+    } else cards.push(none('What happens to new players', 'No new players', { t: 'No new players ' + inR, b: 'Try a longer range or all platforms.' }, { href: '#stop', text: 'Where they stop →' }));
+
+    // how they play
+    var Mo = M.modes;
+    if (Mo && Mo.families) {
+      var fams = Mo.families, tot = 0; fams.forEach(function (x) { tot += x.minutes || 0; });
+      var top = fams.slice().sort(function (a, b) { return b.minutes - a.minutes; })[0], st = Mo.stay;
+      var r = st && st.pvp && st.pvp.yes.v != null && st.pvp.no.v ? st.pvp.yes.v / st.pvp.no.v : null;
+      cards.push(tot ? pic('How they play', ui.donut({ parts: fams.map(function (x) { return { label: x.label, v: x.minutes, color: ui.COLORS[x.key] }; }), center: f.pct(top.minutes * 100 / tot), centerSub: top.short.toLowerCase(),
+          fmt: function (v) { return f.num(v) + ' minutes of battle'; }, label: 'Battle time by way of playing' }),
+          '<b>Most battle time is ' + top.label.toLowerCase() + '.</b>' + (r != null && r > 1.05 ? ' Players who try PvP early are <b>' + (r >= 10 ? Math.round(r) : r.toFixed(1)) + '×</b> as likely to still be playing ' + st.days + ' days later.' : ''),
+          { href: '#modes', text: 'How they play →' })
+        : none('How they play', 'No battles', { t: 'No battles ' + inR, b: 'Try a longer range or all platforms.' }, { href: '#modes', text: 'How they play →' }));
+    } else cards.push(none('How they play', 'Not tracked yet', { t: 'HQ cannot tell solo, PvP and with-friends battles apart yet', b: '<a href="#plan">What HQ needs →</a>' }));
+
+    // where the money comes from
+    if (H.revenue > 0) {
+      var iapShare = (H.revIap || 0) * 100 / H.revenue;
+      cards.push(pic('Where the money comes from', ui.donut({ parts: [{ label: 'Purchases', v: H.revIap || 0, color: 'var(--green)', note: f.num(H.payers) + ' buyers' }, { label: 'Ads', v: H.revAds || 0, color: 'var(--blue)' }],
+          center: f.money(H.revenue), centerSub: rep ? 'all time' : 'earned', fmt: function (v) { return f.money(v); }, label: 'Money by source' }),
+        iapShare >= 50 ? '<b>Purchases bring in ' + f.pct(iapShare) + ' of the money</b>, from just ' + f.num(H.payers) + (H.payers === 1 ? ' buyer' : ' buyers') + '. One buyer more or fewer moves this a lot.'
+          : '<b>Ads bring in ' + f.pct(100 - iapShare) + ' of the money.</b>', { href: '#money', text: 'Money →' }));
+    } else cards.push(none('Where the money comes from', 'No money yet', { t: 'No ads or purchases ' + inR, b: 'Try a longer range or all platforms.' }, { href: '#money', text: 'Money →' }));
+
+    // a new player's worth against the goal
     if (ok(ltv)) {
-      var life = H.lifeDays, perDay = ok(H.ltvArpdau) ? H.ltvArpdau : H.arpdau, LT = (M.money && M.money.ltv) || {};
-      var horizon = steady ? 'per new player, HQ\'s steady-state estimate.' : H.ltvKind === 'projected180' ? 'per new player, projected over their first 180 days.' : 'per new player.';
-      hero.body.appendChild(h('div', { style: { display: 'flex', 'flex-wrap': 'wrap', 'align-items': 'baseline', gap: '6px 14px', margin: '6px 0 16px' } },
-        h('span', { style: { font: '800 var(--fs-hero)/1 var(--body)', 'letter-spacing': '-.02em', color: ltv >= goal ? 'var(--good-ink)' : 'var(--ink)' }, text: f.money(ltv) }),
-        h('span', { style: { 'font-size': 'var(--fs-lg)', color: 'var(--ink-2)' }, html: horizon + ' <b>Goal: ' + f.money(goal) + '</b>.' })));
-      hero.body.appendChild(ui.meter({ value: Math.max(0, ltv), goal: goal, label: 'A new player is worth ' + f.money(ltv) + ' against a goal of ' + f.money(goal) }));
-
-      // what the number is made of, in plain words
-      var made = steady
-        ? 'HQ counts about <b>' + (ok(life) ? life.toFixed(1) : '–') + ' days of play</b> for each new device, and each day of play earned about <b>' + f.money(perDay, 3) + '</b> over the last ' + (H.ltvWindowDays || 7) + ' days.'
-        : 'A new player is expected to play on about <b>' + (ok(life) ? life.toFixed(1) : '–') + ' different days</b> in their first 180 days, and each day of play earns about <b>' + f.money(perDay, 3) + '</b>.' +
-          (H.ltvWindowDays && H.ltvWindowDays !== M.filters.days ? ' Both numbers come from the last ' + H.ltvWindowDays + ' days, because a shorter range is too few days to price a player.' : '');
-      var gapTxt;
-      if (ltv >= goal) gapTxt = 'GVT is at the goal. Keep watching the walls below so it stays there.';
-      else if (!(ltv > 0) || !(perDay > 0)) gapTxt = 'A day of play earns nothing for these filters, so playing longer cannot help. Only ads or purchases can move this.';
-      else { var gap = goal / ltv;
-        gapTxt = 'We are at <b>' + Math.round(ltv * 100 / goal) + '%</b> of the goal. To reach ' + f.money(goal) + ', players would need to play about <b>' + gap.toFixed(1) + ' times as many days</b>, or each day would need to earn ' + gap.toFixed(1) + ' times as much, or a mix of both.'; }
-      hero.body.appendChild(h('p', { style: { 'margin-top': '16px', 'max-width': '75ch', color: 'var(--ink-2)' }, html: made + ' ' + gapTxt }));
-
-      // careful: when a few purchases carry most of the value, say so, with what ads alone are worth
-      var iapShare = ok(LT.arpdauIap) && perDay > 0 ? LT.arpdauIap / perDay : null, buyers = M.money ? M.money.payers : null;
-      if (iapShare != null && iapShare >= 0.8) {
-        hero.body.appendChild(h('p', { class: 'means', html: '<b>Careful:</b> purchases make up ' + f.pct(iapShare * 100) + ' of the money per day of play.' +
-          (ok(buyers) && buyers > 0 && buyers < 10 && (rep || H.ltvWindowDays === M.filters.days) ? ' Only ' + f.num(buyers) + (buyers === 1 ? ' player has' : ' players have') + ' bought something' + (rep ? ' so far' : ' ' + inR) + ', so one purchase more or fewer moves this a lot.' : '') +
-          (ok(H.ltvAds) ? ' From ads alone a new player is worth <b>' + f.money(H.ltvAds) + '</b>.' : '') + ' <a href="#money">See the money →</a>' }));
-      }
-      hero.body.appendChild(h('p', { class: 'howto', style: { 'margin-top': '10px' }, text: 'How this is worked out: ' + (H.ltvNote || LT.method || '') }));
-      hero.body.appendChild(h('p', { style: { 'margin-top': '10px' } }, h('a', { href: '#money/money-calc', text: 'Try the $1 calculator →' })));
-    } else hero.body.appendChild(ui.empty({ tag: 'Not enough data', title: 'Not enough data to price a new player yet', body: H.ltvNote || 'The estimate needs retention and a week of revenue.' }));
-    main.appendChild(hero);
-
-    // ---- the big questions, one short card each ----
-    main.appendChild(h('h2', { class: 'eyebrow', style: { 'margin-top': '6px' }, text: 'The big questions, answered' }));
-    main.appendChild(answers(M, ctx, rep, range, pct1, times));
-
-    // ---- what to fix / what is working ----
-    var fix = M.findings.filter(function (x) { return x.sev === 'critical' || x.sev === 'warning'; });
-    var good = M.findings.filter(function (x) { return x.sev === 'good'; });
-    var info = M.findings.filter(function (x) { return x.sev === 'info'; });
-    function list(items) {
-      return h('ol', { style: { 'list-style': 'none', margin: '10px 0 0', padding: 0, display: 'flex', 'flex-direction': 'column' } }, items.map(function (x, i) {
-        return h('li', { style: { display: 'flex', 'flex-direction': 'column', gap: '4px', padding: '14px 0', 'border-top': i ? '1px solid var(--line)' : '0' } },
-          h('div', { style: { display: 'flex', 'flex-wrap': 'wrap', gap: '6px 8px', 'align-items': 'center' } }, ui.pill(x.sev), covChip(h, COVS[findingCov(x)])),
-          h('a', { href: '#' + x.link, style: { color: 'var(--ink)', 'text-decoration': 'none', 'font-weight': '700', 'font-size': 'var(--fs-md)' }, text: x.title }),
-          h('span', { style: { color: 'var(--ink-2)', 'font-size': 'var(--fs-sm)' }, text: x.detail }),
-          x.action ? h('span', { style: { 'font-size': 'var(--fs-sm)' } }, h('b', { text: 'Try: ' }), x.action) : null,
-          h('a', { href: '#' + x.link, style: { 'font-size': 'var(--fs-sm)', 'font-weight': '600' }, text: 'See the evidence →' }));
-      }));
+      var perDay = ok(H.ltvArpdau) ? H.ltvArpdau : H.arpdau, gap = ltv > 0 ? goal / ltv : null;
+      cards.push(pic('A new player\'s worth vs the ' + f.money(goal) + ' goal', h('div', null,
+          h('div', { style: { font: '800 44px/1 var(--body)', 'letter-spacing': '-.02em', color: ltv >= goal ? 'var(--good-ink)' : 'var(--ink)' }, text: f.money(ltv) }),
+          ui.meter({ value: Math.max(0, ltv), goal: goal, label: 'A new player is worth ' + f.money(ltv) + ' against a goal of ' + f.money(goal) })),
+        ltv >= goal ? '<b>GVT is at the goal.</b>' : '<b>' + Math.round(ltv * 100 / goal) + '% of the way to ' + f.money(goal) + '.</b>' +
+          (gap && perDay > 0 && ok(H.lifeDays) ? ' A new player plays about ' + H.lifeDays.toFixed(1) + ' days and earns ' + f.money(perDay, 3) + ' a day. To reach the goal they need to play about ' + gap.toFixed(1) + '× as many days, or earn ' + gap.toFixed(1) + '× as much a day.' : ''),
+        { href: '#money/money-calc', text: 'Try the $1 calculator →' }));
     }
-    var right = null;
-    if (good.length || info.length) right = ui.card({ title: 'What is working', howto: 'Things to protect and build on.',
-      children: [good.length ? list(good) : h('p', { class: 'howto', style: { 'margin-top': '10px' }, text: 'Nothing stands out yet.' }),
-        info.length ? h('h3', { class: 'eyebrow', style: { 'margin-top': '14px' }, text: 'Good to know' }) : null, info.length ? list(info) : null] });
-    main.appendChild(h('div', { class: 'grid' },
-      ui.card({ title: 'What to fix first', howto: 'Red first (losing players or money now), then amber (worth watching). Within each colour, the most players at stake come first.',
-        children: fix.length ? list(fix) : h('p', { style: { 'margin-top': '10px' }, text: 'Nothing urgent for these filters.' }) }),
-      right));
 
-    // ---- the journey of 100 new players ----
+    // ads: do players stop after one?
+    var A = M.ads || {};
+    if (!rep && A.interstitials && ok(A.quitAfterAd) && ok(A.quitBaseline)) {
+      var ratio = A.quitAfterAd / Math.max(0.1, A.quitBaseline);
+      cards.push(pic('Do ads make players quit?', ui.pair({ label: 'How often the game is closed right after a battle', rows: [
+          { label: 'Game closed right after a full-screen ad', v: A.quitAfterAd, color: 'var(--tan)' },
+          { label: 'Game closed after a battle with no ad', v: A.quitBaseline, color: GRAY }] }),
+        ratio > 1.15 ? '<b>Players are ' + ratio.toFixed(1) + '× as likely to quit right after an ad.</b> Fewer ads after a loss could help.' : '<b>Ads are not pushing players out.</b> Players quit about as often with or without an ad.',
+        { href: '#ads', text: 'Ads →' }));
+    } else cards.push(none('Do ads make players quit?', rep ? 'No answer yet' : 'Too few ads', { t: rep ? 'HQ counts ads, but not who closes the game after one' : 'Too few full-screen ads ' + inR + ' to compare', b: rep ? '<a href="#plan">What HQ needs →</a>' : 'Ads only run on iPhone and Android.' }, { href: '#ads', text: 'Ads →' }));
+
+    // notifications: what players do with them
+    var N = M.notifs;
+    if (N && N.kinds) {
+      var o = 0, d = 0, ig = 0; N.kinds.forEach(function (k) { o += k.opened || 0; d += k.dismissed || 0; ig += k.ignored || 0; });
+      cards.push(o + d + ig ? pic('What players do with notifications', ui.donut({ parts: [{ label: 'Opened', v: o, color: 'var(--green)' }, { label: 'Swiped away', v: d, color: 'var(--tan)' }, { label: 'Never touched', v: ig, color: GRAY }],
+          center: f.num(o + d + ig), centerSub: 'sent', fmt: function (v) { return f.num(v) + ' notifications'; }, label: 'Notifications by what the player did' }),
+          '<b>' + f.pct(o * 100 / (o + d + ig)) + ' are opened.</b>' + (ok(N.pushOnPct) ? ' ' + f.pct(N.pushOnPct) + ' of phone players have notifications turned on.' : ''),
+          { href: '#notifs', text: 'Notifications →' })
+        : none('What players do with notifications', 'None sent', { t: 'No notifications ' + inR, b: 'Try a longer range or all platforms.' }, { href: '#notifs', text: 'Notifications →' }));
+    } else cards.push(none('What players do with notifications', 'Not tracked yet', { t: 'HQ never learns whether a notification was opened', b: '<a href="#plan">What HQ needs →</a>' }));
+    main.appendChild(h('div', { class: 'glance' }, cards));
+
+    // ---- 3. the journey of 100 new players ----
     if (M.funnel && M.funnel[0] && M.funnel[0].n) {
       var F0 = M.funnel[0].n, at = function (k) { var s = M.funnel.filter(function (x) { return x.key === k; })[0]; return s ? s.n : 0; };
-      var steps = [
+      var per100 = [
         { label: 'Install and open GVT', n: F0 },
         { label: 'Play a full minute', n: H.played },
         { label: 'Win Level 1', n: at('l1') },
         { label: 'Reach Level 5', n: at('l5') },
         { label: 'Reach Level 10', n: at('l10') }
-      ];
-      var per100 = steps.map(function (s) { return { label: s.label, n: Math.round(s.n * 100 / F0) }; });
-      var lost = per100[0].n - per100[1].n, biggest = true;
-      for (var j = 2; j < per100.length; j++) if (per100[j - 1].n - per100[j].n > lost) biggest = false;
-      main.appendChild(ui.card({ title: 'The journey of 100 new players', howto: 'Out of every 100 people who install GVT in this period, how many get to each point. The gaps between the bars are the players we lose.',
+      ].map(function (s) { return { label: s.label, n: Math.round(s.n * 100 / F0) }; });
+      main.appendChild(ui.card({ title: 'The journey of 100 new players', howto: 'Out of every 100 people who install GVT, how many get to each point.',
         children: ui.funnel({ steps: per100, color: 'var(--green)', flagBy: 'abs' }),
-        means: '<b>' + lost + ' of every 100</b> are gone before they have played a full minute.' + (biggest && lost > 0 ? ' That first minute is the single biggest place GVT loses people.' : '') + ' <a href="#stop">See where players stop →</a>' }));
-    } else if (M.funnel) {
-      main.appendChild(ui.card({ title: 'The journey of 100 new players', children: ui.empty({ tag: 'No new players', title: 'No new players in this period', body: 'Try a longer range or all platforms.' }) }));
-    } else if (rep && M.wall) {
-      main.appendChild(ui.card({ title: 'Where players stop', children: ui.empty({ tag: 'Partly tracked', title: 'The first-minute steps are not reported yet', body: 'HQ knows how many new devices played a full minute (' + f.pct(H.playedPct) + ') and the level each player stopped on, but not the steps before Level 1 (intro, first battle, Sarge\'s tour). <a href="#plan">See the tracking plan →</a>' }) }));
+        means: 'Only <b>' + per100[4].n + ' of every 100</b> reach Level 10. <a href="#stop">See where players stop →</a>' }));
     }
 
-    // ---- key numbers ----
-    var tr = ui.trend, rolling = H.retentionKind === 'rolling';
-    var sub = function (txt, win) { return rep && win ? cap(win) + '. ' + txt : txt; };
-    main.appendChild(h('h2', { class: 'eyebrow', style: { 'margin-top': '6px' }, text: rep ? 'Key numbers from the report' : 'Key numbers for ' + (/^last /.test(W.installs || '') ? 'the ' + W.installs : W.installs || range) }));
-    var noSess = H.sessionMedian == null;
-    main.appendChild(ui.tiles([
-      { label: 'New players', value: f.num(H.installs), sub: sub('New devices that opened GVT.', W.installs), trend: tr(H.installs, P.installs) },
-      { label: 'Played a full minute', value: f.pct(H.playedPct), sub: H.installs ? f.num(H.played) + ' of them. The rest left right away.' : 'No new players in this period.', trend: tr(H.playedPct, P.playedPct, { points: true }) },
-      rolling
-        ? { label: 'Played again on day 1 or later', value: f.pct(ok(H.d1) ? H.d1 * 100 : null), sub: 'Of players who played. HQ\'s rolling count, so it reads higher than "came back the next day".' }
-        : { label: 'Came back on day 1', value: f.pct(ok(H.d1) ? H.d1 * 100 : null), sub: 'Of new players who played.', trend: tr(H.d1, P.d1, { points: true, scale: 100 }) },
-      rolling
-        ? { label: 'Still playing a week later', value: f.pct(ok(H.d7) ? H.d7 * 100 : null), sub: 'Played on day 7 or later.' }
-        : { label: 'Played on day 7', value: f.pct(ok(H.d7) ? H.d7 * 100 : null), sub: 'Of new players who played.', trend: tr(H.d7, P.d7, { points: true, scale: 100 }) },
-      { label: 'Players a day', value: f.num(H.dauAvg), sub: cap(W.playersADay || 'on average') + '. ' + f.num(H.active) + ' different players played' + (rep && W.activePlayers ? ' in the ' + W.activePlayers : '') + '.', trend: tr(H.dauAvg, P.dauAvg) },
-      rep
-        ? { label: 'Typical session', na: noSess, value: f.minutes(H.sessionMedian), sub: 'Half of sessions are shorter.', naSub: 'HQ does not record session length yet.' }
-        : { label: 'Typical session', value: f.minutes(H.sessionMedian), sub: noSess ? 'No sessions in this period.' : 'Half of sessions are shorter.', trend: tr(H.sessionMedian, P.sessionMedian) },
-      { label: rep ? 'Money earned, all time' : 'Money earned', value: f.money(H.revenue), sub: sub('Ads ' + f.money(H.revAds) + ' · purchases ' + f.money(H.revIap) + '.', W.revenue), trend: tr(H.revenue, P.revenue) },
-      { label: rep ? 'Buyers, all time' : 'Buyers', value: f.num(H.payers),
-        sub: (ok(H.payerPct) ? pct1(H.payerPct) : '–') + (rep && H.payerBase ? ' of the ' + f.num(H.payerBase) + ' players who ever played.' : ' of players who played bought something.'), trend: tr(H.payers, P.payers) }
-    ]));
-    if (M.prev) main.appendChild(h('p', { class: 'howto', text: 'Arrows compare with the same number of days just before. Green arrows are good news, red arrows are bad news.' }));
-  }
-
-  // ---- six short answer cards: Skylar's list, at a glance ----
-  function answers(M, ctx, rep, range, pct1, times) {
-    var ui = ctx.ui, h = ui.h, f = ctx.fmt, H = M.headline, COVS = M.coverage || {}, W = M.windows || {};
-    var plan = { href: '#plan', text: 'What HQ needs →' }, inR = M.filters.range === 'all' ? 'so far' : 'in ' + range;
-    var cards = [];
-
-    // 1. where players get stuck: the first minute, then the biggest campaign wall
-    (function () {
-      var wall = M.wall && M.wall.top && M.wall.top.length ? M.wall.rows.filter(function (r) { return r.level === M.wall.top[0]; })[0] : null;
-      var wallTxt = wall ? 'Level ' + wall.level + ' is the biggest wall: ' + f.pct(wall.stopRate) + ' of players who reach it stop there.' : 'No campaign level stands out as a wall yet.';
-      var c = { q: 'Where players get stuck', link: { href: '#stop', text: 'Where they stop →' }, cov: COVS.wall };
-      if (ok(H.bouncePct) && H.installs) {
-        c.num = f.pct(H.bouncePct); c.cap = 'of new players leave in the first minute';
-        c.sev = H.bouncePct > 50 || (wall && wall.stopRate >= 25) ? 'critical' : H.bouncePct > 35 || wall ? 'warning' : 'good';
-        c.text = (wall ? 'After that, ' + wallTxt : wallTxt);
-      } else if (wall) { c.num = f.pct(wall.stopRate); c.cap = 'stop at Level ' + wall.level; c.sev = wall.stopRate >= 25 ? 'critical' : 'warning'; c.text = 'No new players ' + inR + '. ' + wallTxt; }
-      else { c.sev = 'info'; c.text = 'No new players ' + inR + ', and no level stands out as a wall.'; }
-      cards.push(c);
-    })();
-
-    // 2. why they play: where the battle time goes, and which way of playing keeps them
-    (function () {
-      var c = { q: 'Why they play', link: { href: '#modes', text: 'How they play →' }, cov: COVS.modes };
-      var Mo = M.modes;
-      if (!Mo) { c.miss = true; c.text = 'HQ cannot tell solo, PvP and with-friends battles apart yet, so it cannot say what players come for.'; c.link = plan; cards.push(c); return; }
-      var fams = Mo.families, tot = 0; fams.forEach(function (x) { tot += x.minutes || 0; });
-      var top = fams.slice().sort(function (a, b) { return b.minutes - a.minutes; })[0];
-      var st = Mo.stay, r = st && st.pvp.yes.v != null && st.pvp.no.v ? st.pvp.yes.v / st.pvp.no.v : null;
-      if (!tot) { c.sev = 'info'; c.text = 'No battles were played ' + inR + ' for these filters.'; cards.push(c); return; }
-      c.num = f.pct(top.minutes * 100 / tot); c.cap = 'of battle time goes to ' + top.label.toLowerCase();
-      c.sev = r != null && r > 1.2 ? 'good' : 'info';
-      c.text = r != null && r > 1.05 ? 'Players who try PvP in their first ' + st.early + ' days are ' + times(r) + ' as likely to still be playing ' + st.days + ' days later.'
-        : 'The rest goes to ' + fams.filter(function (x) { return x !== top; }).map(function (x) { return x.label.toLowerCase() + ' (' + f.pct(x.minutes * 100 / tot) + ')'; }).join(' and ') + '.';
-      cards.push(c);
-    })();
-
-    // 3. where they don't play: a big feature few of the players who can reach it try
-    (function () {
-      var c = { q: 'Where they don\'t play', link: { href: '#modes', text: 'How they play →' }, cov: COVS.globe };
-      if (!M.modes) { c.miss = true; c.text = 'Globe, raid and park results are not in the report, so HQ cannot see which parts of GVT players skip.'; c.link = plan; cards.push(c); return; }
-      var gaps = [], R = M.raids, GL = M.globe;
-      if (R && R.eligible >= 20 && ok(R.eligiblePct)) gaps.push({ cov: 'raids', v: R.eligiblePct, cap: 'of players at Level ' + R.eligibleLevel + '+ fought a raid' });
-      if (GL && GL.eligible >= 20 && ok(GL.eligiblePct)) gaps.push({ cov: 'globe', v: GL.eligiblePct, cap: 'of players at Level ' + GL.eligibleLevel + '+ fought on the Globe' });
-      gaps.sort(function (a, b) { return a.v - b.v; });
-      var low = M.modes.families.filter(function (x) { return ok(x.playerPct); }).sort(function (a, b) { return a.playerPct - b.playerPct; })[0];
-      var lowTxt = low ? cap(low.label.toLowerCase()) + ' is the least tried way to fight: ' + f.pct(low.playerPct) + ' of players who played tried it.' : '';
-      if (gaps.length) { var g = gaps[0]; c.num = f.pct(g.v); c.cap = g.cap; c.cov = COVS[g.cov]; c.sev = g.v < 20 ? 'warning' : 'info'; c.text = (g.v < 50 ? 'Most players who can reach it never try it.' : 'Many players who can reach it never try it.') + (gaps[1] ? ' ' + cap(f.pct(gaps[1].v) + ' ' + gaps[1].cap) + '.' : '') + (lowTxt ? ' ' + lowTxt : ''); }
-      else if (low && M.modes.activePlayed > 1) { c.num = f.pct(low.playerPct); c.cap = 'of players who played tried ' + low.label.toLowerCase(); c.cov = COVS.modes; c.sev = 'info'; c.text = 'Too few players reached raids or the Globe ' + inR + ' to say who skips them.'; }
-      else { c.sev = 'info'; c.text = 'Too few players ' + inR + ' to say which parts of GVT they skip.'; }
-      cards.push(c);
-    })();
-
-    // 4. ads: do players stop after one?
-    (function () {
-      var A = M.ads || {}, c = { q: 'Ads: do they stop after one?', link: { href: '#ads', text: 'Ads →' }, cov: COVS.ads };
-      var qa = A.quitAfterAd, qb = A.quitBaseline;
-      if (rep) {
-        c.sev = 'muted'; c.pill = 'No answer yet'; c.links = [{ href: '#ads', text: 'Ads →' }, plan];
-        if (ok(A.perPlayerDay)) { c.num = A.perPlayerDay.toFixed(1); c.cap = 'ads a day per player, last 7 days'; }
-        c.text = 'HQ counts the ads' + (A.interstitials ? ' (' + f.num(A.interstitials) + ' full-screen ads in the last ' + (A.windowDays || 45) + ' days)' : '') + ', but does not add up who closes the game after one yet.';
-      } else if (!A.interstitials) { c.sev = 'info'; c.text = 'No full-screen ads ran ' + inR + ' for these filters. Ads only run on iPhone and Android.'; }
-      else if (ok(qa) && ok(qb)) {
-        var r = qa / Math.max(0.1, qb);
-        c.num = f.pct(qa); c.cap = 'of full-screen ads are followed by the game closing';
-        c.sev = r > 1.5 ? 'critical' : r > 1.15 ? 'warning' : 'good';
-        c.text = 'After a battle with no ad it is ' + f.pct(qb) + (r > 1.15 ? ', so players are ' + times(r) + ' as likely to stop right after an ad.' : ', so ads are not pushing players out.');
-      } else { c.sev = 'info'; c.text = 'Too few ads ' + inR + ' to compare.'; }
-      cards.push(c);
-    })();
-
-    // 5. notifications: do they bring players back?
-    (function () {
-      var N = M.notifs, c = { q: 'Notifications: do they bring players back?', link: { href: '#notifs', text: 'Notifications →' }, cov: COVS.notifs };
-      if (!N) { c.miss = true; c.text = 'HQ never learns whether a notification was opened, so it cannot say yet.'; c.link = plan; cards.push(c); return; }
-      var lap = 0, back = 0; N.kinds.forEach(function (k) { lap += k.toLapsed || 0; back += k.broughtBack || 0; });
-      var on = ok(N.pushOnPct) ? ' ' + f.pct(N.pushOnPct) + ' of phone players who played have notifications on.' : '';
-      var rk = N.kinds.filter(function (k) { return k.key === 'rk'; })[0];
-      if (lap) {
-        var p = back * 100 / lap;
-        c.num = pct1(p); c.cap = 'of notifications to players who had stopped brought them back';
-        c.sev = p >= 10 ? 'good' : 'warning';
-        c.text = f.num(back) + ' of ' + f.num(lap) + ' led to a game the same day.' + on;
-      } else if (rk && rk.sent) {
-        c.num = f.pct(rk.openPct); c.cap = 'of call-outs are opened'; c.sev = rk.openPct >= 30 ? 'good' : 'warning';
-        c.text = 'None went to players who had stopped ' + inR + '.' + on;
-      } else { c.sev = 'info'; c.text = 'No notifications were sent ' + inR + ' for these filters.'; }
-      cards.push(c);
-    })();
-
-    // 6. money: who buys, and where the money comes from
-    (function () {
-      var Mo = M.money || {}, c = { q: 'Money', link: { href: '#money', text: 'Money →' }, cov: COVS.money };
-      var rev = Mo.revenue, iap = Mo.iap || 0;
-      if (!(rev > 0)) { c.num = f.money(0); c.cap = 'earned ' + inR; c.sev = 'info'; c.text = 'No ads or purchases for these filters.'; cards.push(c); return; }
-      c.num = ok(Mo.payerPct) ? pct1(Mo.payerPct) : f.num(Mo.payers);
-      c.cap = ok(Mo.payerPct) ? (rep && H.payerBase ? 'of the ' + f.num(H.payerBase) + ' players who ever played bought something' : 'of players who played bought something') : 'buyers';
-      c.sev = ok(Mo.payerPct) ? (Mo.payerPct >= 3 ? 'good' : 'warning') : 'info';
-      var share = iap * 100 / rev;
-      if (share >= 99.5 || share <= 0.5) c.text = 'All the money comes from ' + (share >= 50 ? 'purchases' : 'ads') + ' (' + f.money(rev) + (rep ? ', ' + (W.revenue || 'all time') : '') + ')' +
-        (ok(Mo.payers) && Mo.payers > 0 ? ', from ' + f.num(Mo.payers) + (Mo.payers === 1 ? ' buyer' : ' buyers') : '') + '.';
-      else c.text = (share >= 50 ? 'Purchases bring in ' + f.pct(share) + ' of the money' : 'Ads bring in ' + f.pct(100 - share) + ' of the money') +
-        ' (' + f.money(share >= 50 ? iap : Mo.ads) + ' of ' + f.money(rev) + (rep ? ', ' + (W.revenue || 'all time') : '') + ')' +
-        (!ok(Mo.payers) ? '.' : share >= 50 ? ', from ' + f.num(Mo.payers) + (Mo.payers === 1 ? ' buyer.' : ' buyers.') : '. ' + f.num(Mo.payers) + (Mo.payers === 1 ? ' player' : ' players') + ' bought something.');
-      cards.push(c);
-    })();
-
-    return h('div', { style: { display: 'grid', gap: '12px', 'grid-template-columns': 'repeat(auto-fit, minmax(min(100%, 290px), 1fr))' } }, cards.map(function (c) {
-      if (c.miss) { c.sev = 'muted'; c.pill = 'No data yet'; }
-      var links = c.links || [c.link];
-      return h('section', { class: 'card', style: { display: 'flex', 'flex-direction': 'column', gap: '8px', padding: '16px 18px' } },
-        h('div', { style: { display: 'flex', 'align-items': 'flex-start', 'justify-content': 'space-between', gap: '8px' } },
-          h('h3', { style: { font: '700 var(--fs-md)/1.3 var(--body)' }, text: c.q }), ui.pill(c.sev, c.pill)),
-        c.num != null ? h('div', { style: { display: 'flex', 'flex-wrap': 'wrap', 'align-items': 'baseline', gap: '2px 8px' } },
-          h('span', { style: { font: '750 var(--fs-xl)/1.1 var(--body)', 'letter-spacing': '-.01em' }, text: c.num }),
-          h('span', { style: { 'font-size': 'var(--fs-sm)', color: 'var(--ink-2)' }, text: c.cap })) : null,
-        h('p', { style: { 'font-size': 'var(--fs-sm)', color: c.miss ? 'var(--ink-2)' : 'var(--ink)' }, text: c.text }),
-        h('div', { style: { display: 'flex', 'flex-wrap': 'wrap', 'align-items': 'center', 'justify-content': 'space-between', gap: '6px 12px', 'margin-top': 'auto', 'padding-top': '4px' } },
-          covChip(h, c.cov),
-          h('span', { style: { display: 'flex', gap: '12px', 'font-size': 'var(--fs-sm)', 'font-weight': '600' } }, links.map(function (l) { return h('a', { href: l.href, text: l.text }); }))));
-    }));
+    // ---- 4. what to do: the top fixes and what is working ----
+    var fix = M.findings.filter(function (x) { return x.sev === 'critical' || x.sev === 'warning'; });
+    var good = M.findings.filter(function (x) { return x.sev === 'good'; });
+    function list(items) {
+      return h('ol', { class: 'todo' }, items.map(function (x) {
+        return h('li', null, ui.pill(x.sev), h('a', { class: 't', href: '#' + x.link, text: x.title }), x.action ? h('span', { class: 'try' }, h('b', { text: 'Try: ' }), x.action) : null);
+      }));
+    }
+    var fixCard = ui.card({ title: 'What to fix first', howto: 'Red first, then amber. Tap one for the evidence.',
+      children: fix.length ? [list(fix.slice(0, 3)), fix.length > 3 ? h('details', { class: 'deep' }, h('summary', { text: fix.length - 3 + ' more to watch' }), list(fix.slice(3))) : null]
+        : h('p', { style: { 'margin-top': '10px' }, text: 'Nothing urgent for these filters.' }) });
+    main.appendChild(h('div', { class: 'grid' }, fixCard,
+      good.length ? ui.card({ title: 'What is working', howto: 'Things to protect and build on.', children: list(good) }) : null));
   }
 
   G.sections.push({ id: 'briefing', nav: 'Briefing', title: 'How GVT is doing', question: 'How is GVT doing and what do we fix first?', area: null, render: render });
@@ -2540,7 +2503,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // ---- 7. weekly cohorts ----
     var CO = RT.cohorts || [];
     var c7 = ui.card({ title: 'How each week of new players held up',
-      howto: 'One row per install week. Each cell is the share of that week\'s players (who played a minute) who ' + (classic ? 'played on' : 'played on or after') + ' day 1, 3, 7, 14 or 30. Darker green means more stayed. A * means the week is still settling: not all its players are that many days old yet.' });
+      howto: 'One row per install week. Each cell is the share of that week\'s players (who played a minute) who ' + (classic ? 'played on' : 'played on or after') + ' day 1, 3, 7, 14 or 30. Darker blue means more stayed. A * means the week is still settling: not all its players are that many days old yet.' });
     if (CO.length) {
       var yr0 = String(CO[0].week || '').slice(0, 4);
       var weekLab = function (v) { var t = shortDate(v); return String(v).slice(0, 4) === yr0 ? t.replace(/, \d{4}$/, '') : t; };
@@ -3154,7 +3117,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     heat.style.minHeight = '120px';
     var hourCols = []; for (hr = 0; hr < 24; hr++) hourCols.push({ key: 'h' + hr, label: shortHour(hr), n: true, sort: false, value: (function (k) { return function (r) { return r.vals[k]; }; })(hr) });
     wrap.appendChild(ui.card({ title: 'Busiest hours of the week',
-      howto: 'Each square is one hour of one day. A stronger green means more sessions started then. Times are each player\'s own local time.',
+      howto: 'Each square is one hour of one day. A stronger blue means more sessions started then. Times are each player\'s own local time.',
       children: ui.withTable(heat, function () {
         return ui.table({ caption: 'Sessions started by day and hour', sortable: false,
           cols: [{ key: 'day', label: 'Day' }].concat(hourCols).concat([{ key: 'total', label: 'Total', n: true, fmt: f.num }]),
@@ -3657,7 +3620,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   function dayLabel(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? MON[+p[1] - 1] + ' ' + (+p[2]) : String(iso || ''); }
   function nz(v) { return v != null && isFinite(v) ? v : null; }
-  var C_ADS = 'var(--blue)', C_IAP = 'var(--ink-2)';   // ads are blue on the Ads page too; green, tan stay for ways of playing
+  var C_ADS = 'var(--blue)', C_IAP = 'var(--green)';   // ads wear the aqua slot (as on the Ads page), purchases the blue one; the Briefing's money donut matches
 
   var CSS = '.sec-money .calc{display:grid;gap:8px 32px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));margin-top:6px}' +
     '.sec-money .sl{display:flex;flex-direction:column;gap:4px;padding:12px 0;border-top:1px solid var(--line)}' +
