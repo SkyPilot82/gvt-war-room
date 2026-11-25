@@ -393,31 +393,35 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   // under a shared tag, 'no' = nothing usable. trackedNote says why, in one plain sentence.
   var MODES = [
     // solo vs computer
-    { key: 'opener',   family: 'pve',  label: 'The first battle',      detail: 'The opener at the crossing, before Level 1',      tracked: 'partly', trackedNote: 'Partly: HQ is not told this first battle happened as a first-run step. At most its start arrives under a shared battle tag, with no result.' },
+    { key: 'opener',   family: 'pve',  label: 'The first battle',      detail: 'The opener at the crossing, before Level 1',      tracked: 'yes', trackedNote: "Yes, since Nov 25: the first battle is sent as its own first-run step, with its result." },
     { key: 'camp',     family: 'pve',  label: 'The Campaign',          detail: 'Levels 1-100, the tan army marches on your room', levels: [1, 100], tracked: 'yes', trackedNote: "Yes: every level's start and result (won, lost, retreated) reach HQ." },
-    { key: 'elite',    family: 'pve',  label: 'Elite Forces',          detail: 'Campaign levels 101-200',                         levels: [101, 200], tracked: 'yes', trackedNote: 'Yes: the same level start and result as the campaign.' },
-    { key: 'third',    family: 'pve',  label: 'The Third Hundred',     detail: 'Campaign levels 201-300',                         levels: [201, 300], tracked: 'yes', trackedNote: 'Yes: the same level start and result as the campaign.' },
-    { key: 'park',     family: 'pve',  label: 'The Parks',             detail: 'Yeti, Dino, Outlaw Town, Bear and Gnome parks',   tracked: 'partly', trackedNote: 'Partly: the start arrives (park:<name>), but no result. HQ keeps only the highest rung for four of the five parks.' },
-    { key: 'raid',     family: 'pve',  label: 'Raids',                 detail: 'Boss fights in the throne rooms, Easy to Ultra Mega', tracked: 'partly', trackedNote: 'Partly: the start arrives (raid:<name>), but no result for solo raids.' },
-    { key: 'rival',    family: 'pve',  label: 'Rival, Nemesis and Mom', detail: 'Computer ambushes on your room, park and bank',   tracked: 'partly', trackedNote: 'Partly: rival and Nemesis fights start through the battlefield, so the start arrives tagged as battlefield (bf1). Mom sends only the screen at close. No results come back.' },
-    { key: 'survival', family: 'pve',  label: 'Survival Mode',         detail: 'How long can your fort hold? (code ENDLESS)',     tracked: 'partly', trackedNote: 'Partly: HQ gets each run and its wave count, but the start is tagged as campaign.' },
+    { key: 'elite',    family: 'pve',  label: 'Elite Forces',          detail: 'Campaign levels 101-200',                         levels: [101, 200], tracked: 'yes', trackedNote: "Yes: the same level start and result as the campaign." },
+    { key: 'third',    family: 'pve',  label: 'The Third Hundred',     detail: 'Campaign levels 201-300',                         levels: [201, 300], tracked: 'yes', trackedNote: "Yes: the same level start and result as the campaign." },
+    { key: 'park',     family: 'pve',  label: 'The Parks',             detail: 'Yeti, Dino, Outlaw Town, Bear and Gnome parks',   tracked: 'yes', trackedNote: "Yes, since Nov 25: every park battle is sent with the park, the rung and the result." },
+    { key: 'raid',     family: 'pve',  label: 'Raids',                 detail: 'Boss fights in the throne rooms, Easy to Ultra Mega', tracked: 'yes', trackedNote: "Yes, since Nov 25: every raid is sent with its name, tier and result." },
+    { key: 'rival',    family: 'pve',  label: 'Rival, Nemesis and Mom', detail: 'Computer ambushes on your room, park and bank',   tracked: 'yes', trackedNote: "Yes, since Nov 25: rival and Nemesis fights are sent as their own mode, with the result." },
+    { key: 'survival', family: 'pve',  label: 'Survival Mode',         detail: 'How long can your fort hold? (code ENDLESS)',     tracked: 'yes', trackedNote: "Yes, since Nov 25: each run is sent as Survival, with its result." },
     // player vs player
-    { key: 'bf',       family: 'pvp',  label: 'The Battlefield',       detail: '1v1 PLAY and Featured Battle',                    tracked: 'partly', trackedNote: 'Partly: the start arrives as bf1 or bf2 with the number of humans. Ranked results come back, private rooms do not.' },
-    { key: 'bfbig',    family: 'pvp',  label: 'Big Battles',           detail: '2v2 up to 10v10, private rooms and squad VS',     tracked: 'partly', trackedNote: 'Partly: every team battle arrives as bf2, so sizes from 2v2 to 10v10 cannot be told apart.' },
-    { key: 'rk',       family: 'pvp',  label: 'Leaderboard call-outs', detail: '"Calls you out" rank challenges, 90-second clock', tracked: 'partly', trackedNote: 'Partly: HQ holds every call-out and answer, but the fight itself is tagged as battlefield.' },
-    { key: 'away',     family: 'pvp',  label: 'Away battles',          detail: 'Battle their army while they are away',           tracked: 'yes', trackedNote: 'Yes: each away battle has its own report to HQ (/away/report) with the result. Its start is tagged as battlefield (bf1).' },
-    { key: 'gauntlet', family: 'pvp',  label: 'The Gauntlet',          detail: 'Win the torch and hold it',                       tracked: 'partly', trackedNote: 'Partly: torch fights against the computer report a result, but the start is tagged as battlefield (bf1).' },
-    { key: 'globe',    family: 'pvp',  label: 'The Globe',             detail: 'Domination: squads plant flags on countries',     tracked: 'partly', trackedNote: 'Partly: HQ keeps the map and every verdict, but the fight is tagged as battlefield (bf1 or bf2).' },
-    { key: 'desert',   family: 'pvp',  label: 'Night PvP events',      detail: 'Battle of the Desert, Frozen Tundra, Rooftop Duel', tracked: 'yes', trackedNote: 'Yes: each night PvP event has its own claim to HQ (/bd/claim) with the result. Its start is tagged as a team battle (bf2).' },
+    { key: 'bf',       family: 'pvp',  label: 'The Battlefield',       detail: '1v1 PLAY and Featured Battle',                    tracked: 'yes', trackedNote: "Yes, since Nov 25: every battlefield fight is sent with the number of humans and the result." },
+    { key: 'bfbig',    family: 'pvp',  label: 'Big Battles',           detail: '2v2 up to 10v10, private rooms and squad VS',     tracked: 'yes', trackedNote: "Yes, since Nov 25: team battles are sent with the number of humans on each side, so sizes can be told apart." },
+    { key: 'rk',       family: 'pvp',  label: 'Leaderboard call-outs', detail: '"Calls you out" rank challenges, 90-second clock', tracked: 'yes', trackedNote: "Yes, since Nov 25: call-out fights are sent as their own mode; HQ also holds every call-out and answer." },
+    { key: 'away',     family: 'pvp',  label: 'Away battles',          detail: 'Battle their army while they are away',           tracked: 'yes', trackedNote: "Yes: each away battle reports its result to HQ, and since Nov 25 its start is sent as its own mode." },
+    { key: 'gauntlet', family: 'pvp',  label: 'The Gauntlet',          detail: 'Win the torch and hold it',                       tracked: 'yes', trackedNote: "Yes, since Nov 25: torch fights are sent as their own mode, with the result." },
+    { key: 'globe',    family: 'pvp',  label: 'The Globe',             detail: 'Domination: squads plant flags on countries',     tracked: 'yes', trackedNote: "Yes, since Nov 25: Globe fights are sent as their own mode; HQ also keeps the map and every verdict." },
+    { key: 'desert',   family: 'pvp',  label: 'Night PvP events',      detail: 'Battle of the Desert, Frozen Tundra, Rooftop Duel', tracked: 'yes', trackedNote: "Yes: each night PvP event claims its result at HQ, and since Nov 25 its start is sent as its own mode." },
     // with friends
-    { key: 'coopcamp', family: 'coop', label: 'Campaign with friends', detail: 'Party, Hold the Line, up to 10 in a lobby',       tracked: 'partly', trackedNote: 'Partly: the start arrives with the campaign tag and the host sends the result, but these fights stay out of the level wall.' },
-    { key: 'invasion', family: 'coop', label: 'Night boss events',     detail: 'The Invasion, The Eruption, The Showdown',        tracked: 'yes', trackedNote: 'Yes: HQ runs the room and records seats, the result and the claim.' },
-    { key: 'partyraid',family: 'coop', label: 'Party raids and parks', detail: 'Raids and parks with your party',                 tracked: 'no', trackedNote: 'No: party raid and park results are sent as losses on purpose, so HQ cannot trust them.' }
+    { key: 'coopcamp', family: 'coop', label: 'Campaign with friends', detail: 'Party, Hold the Line, up to 10 in a lobby',       tracked: 'yes', trackedNote: "Yes, since Nov 25: co-op campaign fights are sent as their own mode, with the result, and stay out of the level wall." },
+    { key: 'invasion', family: 'coop', label: 'Night boss events',     detail: 'The Invasion, The Eruption, The Showdown',        tracked: 'yes', trackedNote: "Yes: HQ runs the room and records seats, the result and the claim." },
+    { key: 'partyraid',family: 'coop', label: 'Party raids and parks', detail: 'Raids and parks with your party',                 tracked: 'yes', trackedNote: "Yes, since Nov 25: each player's own game sends the real result. Older party results were sent as losses and are not trusted." }
   ];
 
   var PARKS = [
     { key: 'yeti', label: 'Yeti Park' }, { key: 'dino', label: 'Dino Park' }, { key: 'western', label: 'Outlaw Town' },
-    { key: 'teddy', label: 'Bear Park' }, { key: 'gnome', label: 'Gnome Park' }
+    { key: 'teddy', label: 'Bear Park' }, { key: 'moon', label: 'Gnome Park' },
+    // seasonal and code-unlocked parks (11/25, card B's done note): the game sends its own key for these.
+    // seasonal: true keeps them out of the example data, so the made-up numbers do not change.
+    { key: 'turkey', label: 'Turkey Hunt', seasonal: true }, { key: 'nut', label: "Nutcracker's Ball", seasonal: true },
+    { key: 'cove', label: 'Pirate Cove', seasonal: true }
   ];
 
   var RAIDS = [
@@ -428,7 +432,16 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     { key: 'palace',    label: "Princess Croak's Palace",   boss: 'Princess Croak' },
     { key: 'icecaves',  label: 'The Ice Caves',             boss: 'Ferocious Yeti' },
     { key: 'sky',       label: 'The Sky Fortress',          boss: 'Sky Fortress' },
-    { key: 'chess',     label: 'The Chess Set',             boss: 'The Chess Set' }
+    { key: 'chess',     label: 'The Chess Set',             boss: 'The Chess Set' },
+    // seasonal and code-unlocked raids (11/25, card B's done note), out of the example data like the seasonal parks
+    { key: 'gmy',       label: 'The Haunted Library',       boss: 'The Giant Mummy',     seasonal: true },
+    { key: 'wreck',     label: 'The Sunken Ship',           boss: 'King Kraken',         seasonal: true },
+    { key: 'bbs',       label: 'The Buffalo Bill Showdown', boss: 'Buffalo Bill',        seasonal: true },
+    { key: 'sweets',    label: 'The Land of Sweets',        boss: 'The Land of Sweets',  seasonal: true },
+    { key: 'party',     label: 'The Party Lawn',            boss: 'The Party Lawn',      seasonal: true },
+    { key: 'music',     label: 'Music Land',                boss: 'Music Land',          seasonal: true },
+    { key: 'xmasbox',   label: 'The Christmas Box',         boss: 'The Christmas Box',   seasonal: true },
+    { key: 'string',    label: 'The String raid',           boss: 'The String raid',     seasonal: true } // game key 'string'; its in-game name is not in the notes yet
   ];
   var TIERS = [
     { key: 'e', label: 'Easy' }, { key: 'm', label: 'Medium' }, { key: 'h', label: 'Hard' },
@@ -530,6 +543,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   function byKey(list) { var o = {}; list.forEach(function (x) { o[x.key] = x; }); return o; }
 
   window.GVT = window.GVT || {};
+  // 11/25: GVT does not ask players their age and the team decided not to, so the age filter and the Who plays page stay
+  // hidden. The age field stays in the export format; set this to true if a source ever appears.
+  window.GVT.AGES_ON = false;
   window.GVT.CAT = {
     FAMILIES: FAMILIES, MODES: MODES, PARKS: PARKS, RAIDS: RAIDS, TIERS: TIERS, FTUE: FTUE, NOTIFS: NOTIFS,
     AD_PLACEMENTS: AD_PLACEMENTS, AD_RULES: AD_RULES, SKUS: SKUS, STORE_FEE: STORE_FEE, SCREENS: SCREENS,
@@ -746,9 +762,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
                 if (B.o === 'w') { camp = lv; lossStreak = 0; } else { lossStreak = lastLossLv === lv ? lossStreak + 1 : 1; lastLossLv = lv; }
               }
             }
-            if (B.k === 'park') { var pk = pick(CAT.PARKS.map(function (x) { return x.key; }), [30, 26, 18, 16, 10]); B.sub = pk; B.lv = ri(1, Math.min(50, 4 + Math.floor(camp / 3))); B.o = R() < 0.74 ? 'w' : R() < 0.85 ? 'l' : 'r'; B.s = Math.round(between(90, 260)); }
+            if (B.k === 'park') { var pk = pick(CAT.PARKS.filter(function (x) { return !x.seasonal; }).map(function (x) { return x.key; }), [30, 26, 18, 16, 10]); B.sub = pk; B.lv = ri(1, Math.min(50, 4 + Math.floor(camp / 3))); B.o = R() < 0.74 ? 'w' : R() < 0.85 ? 'l' : 'r'; B.s = Math.round(between(90, 260)); }
             if (B.k === 'raid' || B.k === 'partyraid') {
-              var rk = pick(CAT.RAIDS.map(function (x) { return x.key; }), [30, 20, 15, 12, 9, 7, 4, 3]);
+              var rk = pick(CAT.RAIDS.filter(function (x) { return !x.seasonal; }).map(function (x) { return x.key; }), [30, 20, 15, 12, 9, 7, 4, 3]);
               var top = camp >= 120 ? 4 : camp >= 60 ? 3 : camp >= 35 ? 2 : camp >= 22 ? 1 : 0;
               var tier = ['e', 'm', 'h', 'g', 'u'][Math.min(top, ri(0, top))];
               var twp = { e: 0.78, m: 0.6, h: 0.42, g: 0.28, u: 0.12 }[tier] + (B.k === 'partyraid' ? 0.12 : 0);
@@ -853,8 +869,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
           for (var tbi = 0, tnb = ti(4, 10); tbi < tnb; tbi++) {
             var k2 = testModes[ti(0, testModes.length - 1)], B2 = { k: k2, sub: '', lv: 0, t: '', o: RT() < 0.8 ? 'w' : 'l', s: Math.round(tb(40, 200)), h: 1 };
             if (k2 === 'camp') { tcamp = Math.min(300, tcamp + ti(0, 3)); B2.lv = Math.max(1, tcamp); B2.k = B2.lv > 200 ? 'third' : B2.lv > 100 ? 'elite' : 'camp'; B2.o = 'w'; }
-            if (k2 === 'raid') { B2.sub = CAT.RAIDS[ti(0, CAT.RAIDS.length - 1)].key; B2.t = ['e', 'm', 'h', 'g', 'u'][ti(0, 4)]; }
-            if (k2 === 'park') { B2.sub = CAT.PARKS[ti(0, CAT.PARKS.length - 1)].key; B2.lv = ti(1, 50); }
+            if (k2 === 'raid') { var R8 = CAT.RAIDS.filter(function (x) { return !x.seasonal; }); B2.sub = R8[ti(0, R8.length - 1)].key; B2.t = ['e', 'm', 'h', 'g', 'u'][ti(0, 4)]; }
+            if (k2 === 'park') { var P5 = CAT.PARKS.filter(function (x) { return !x.seasonal; }); B2.sub = P5[ti(0, P5.length - 1)].key; B2.lv = ti(1, 50); }
             if (k2 === 'bfbig' || k2 === 'desert' || k2 === 'coopcamp' || k2 === 'invasion') B2.h = ti(2, 6);
             TS.b.push(B2); tdur += B2.s + tb(10, 40);
           }
@@ -931,7 +947,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       x.stopped = x.quiet >= LAPSE;
       x.status = x.quiet <= 2 ? 'playing' : x.quiet < LAPSE ? 'cooling' : 'stopped';
       var lastS = x.ss[x.ss.length - 1];
-      x.lastScreen = lastS ? lastS.end : null;
+      x.lastScreen = lastS && CAT.screen[lastS.end] ? lastS.end : null; // "unknown" or missing = not known (card A's older visits)
       // the level they were stuck on: the next campaign level, if they lost it 2+ times
       var nextLv = x.p.camp + 1, tries = 0, lost = 0;
       x.ss.forEach(function (s) { s.b.forEach(function (b) { if ((b.k === 'camp' || b.k === 'elite' || b.k === 'third') && b.lv === nextLv) { tries++; if (b.o !== 'w') lost++; } }); });
@@ -1086,7 +1102,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var fitP = fitPower([1, 3, 7, 14, 30].map(function (N) { return [N, R[N].played.v || 0]; }));
     var lifeP = lifeDays(fitP, 180);
 
-    var playedSess = sess.filter(function (o) { return o.x.played; }).map(function (o) { return o.s.s; });
+    var playedSess = sess.filter(function (o) { return o.x.played && o.s.s > 0; }).map(function (o) { return o.s.s; }); // 0 = length not known
     var dayVals = []; for (var d = start; d <= end; d++) dayVals.push(dayCount[d] || 0);
     var payers = {}; buys.forEach(function (o) { payers[o.x.i] = 1; });
     var nPayers = Object.keys(payers).length;
@@ -1141,8 +1157,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
 
     // ---- the last thing they saw before they left for good ----
     var lastScr = {}; var lapsed = sInstalls.filter(function (x) { return x.stopped; });
-    lapsed.forEach(function (x) { var k = x.lastScreen || 'title'; lastScr[k] = (lastScr[k] || 0) + 1; });
-    M.lastScreen = { n: lapsed.length, windowDays: sDays, group: 'every new device that stopped, including those that left in the first minute', rows: CAT.SCREENS.map(function (s) { return { key: s.key, label: s.label, n: lastScr[s.key] || 0 }; }).filter(function (r) { return r.n > 0; }).sort(function (a, b) { return b.n - a.n; }) };
+    var scrKnown = lapsed.filter(function (x) { return x.lastScreen; });
+    scrKnown.forEach(function (x) { var k = x.lastScreen; lastScr[k] = (lastScr[k] || 0) + 1; });
+    M.lastScreen = { n: scrKnown.length, unknown: lapsed.length - scrKnown.length, windowDays: sDays, group: 'every new device that stopped, including those that left in the first minute', rows: CAT.SCREENS.map(function (s) { return { key: s.key, label: s.label, n: lastScr[s.key] || 0 }; }).filter(function (r) { return r.n > 0; }).sort(function (a, b) { return b.n - a.n; }) };
 
     // ---- the wall: campaign stop rate per level (installs of at least the last 30 days who played) ----
     var wallRows = [];
@@ -1198,8 +1215,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var eligibleRaid = act.filter(function (a) { return a.x.played && a.x.p.camp >= RAID_LV; }).length;
     M.raids = {
       players: Object.keys(raidPl).length, playerPct: pct(Object.keys(raidPl).length, activePlayed), eligible: eligibleRaid, eligibleLevel: RAID_LV, eligiblePct: pct(Object.keys(raidPl).length, eligibleRaid),
-      rows: CAT.RAIDS.map(function (R0) { var r = raid[R0.key]; if (!r) return { key: R0.key, label: R0.label, boss: R0.boss, attempts: 0, wins: 0, players: 0, party: 0, tiers: {} }; return { key: r.key, label: r.label, boss: r.boss, attempts: r.attempts, wins: r.wins, winRate: pct(r.wins, r.attempts), players: Object.keys(r.pl).length, party: r.party, tiers: r.tiers }; }),
-      parks: CAT.PARKS.map(function (P0) { var p = park[P0.key]; return p ? { key: p.key, label: p.label, attempts: p.attempts, wins: p.wins, winRate: pct(p.wins, p.attempts), players: Object.keys(p.pl).length, top: p.top } : { key: P0.key, label: P0.label, attempts: 0, wins: 0, players: 0, top: 0 }; }),
+      rows: CAT.RAIDS.filter(function (R0) { return !R0.seasonal || raid[R0.key]; }).map(function (R0) { var r = raid[R0.key]; if (!r) return { key: R0.key, label: R0.label, boss: R0.boss, attempts: 0, wins: 0, players: 0, party: 0, tiers: {} }; return { key: r.key, label: r.label, boss: r.boss, attempts: r.attempts, wins: r.wins, winRate: pct(r.wins, r.attempts), players: Object.keys(r.pl).length, party: r.party, tiers: r.tiers }; }),
+      parks: CAT.PARKS.filter(function (P0) { return !P0.seasonal || park[P0.key]; }).map(function (P0) { var p = park[P0.key]; return p ? { key: p.key, label: p.label, attempts: p.attempts, wins: p.wins, winRate: pct(p.wins, p.attempts), players: Object.keys(p.pl).length, top: p.top } : { key: P0.key, label: P0.label, attempts: 0, wins: 0, players: 0, top: 0 }; }),
       parkPlayers: Object.keys(parkPl).length, parkPct: pct(Object.keys(parkPl).length, activePlayed)
     };
 
@@ -1211,12 +1228,14 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // ---- when they play (player's local clock) ----
     var heat = []; for (var w = 0; w < 7; w++) { heat.push([]); for (var h = 0; h < 24; h++) heat[w].push(0); }
     var byHour = []; for (h = 0; h < 24; h++) byHour.push(0);
-    sess.forEach(function (o) { var wd = new Date(Date.parse(D.day0 + 'T00:00:00Z') + o.s.d * 864e5).getUTCDay(); var hr = Math.floor(o.s.m / 60) % 24; heat[wd][hr]++; byHour[hr]++; });
+    // only sessions that carry the player's own clock (card A's estimated sessions have none; card B's real ones do)
+    var timedSess = sess.filter(function (o) { return typeof o.s.m === 'number' && o.s.m >= 0 && o.s.m <= 1439; });
+    timedSess.forEach(function (o) { var wd = new Date(Date.parse(D.day0 + 'T00:00:00Z') + o.s.d * 864e5).getUTCDay(); var hr = Math.floor(o.s.m / 60) % 24; heat[wd][hr]++; byHour[hr]++; });
     var lb = [[0, 60, 'Under 1 min'], [60, 180, '1-3 min'], [180, 300, '3-5 min'], [300, 600, '5-10 min'], [600, 1200, '10-20 min'], [1200, 1800, '20-30 min'], [1800, 3600, '30-60 min'], [3600, 1e9, 'Over an hour']];
     // days a week: each player's playing days over the days they could have played in the range (from install or range start), at least 7
     var weekDays = act.filter(function (a) { return a.x.played; }).map(function (a) { var from = Math.max(start, a.x.p.inst), span = Math.max(7, Math.min(end, a.x.last + LAPSE) - from + 1); return Math.min(7, a.nDays * 7 / span); });
     M.time = {
-      heat: heat, byHour: byHour, sessions: sess.length,
+      heat: heat, byHour: byHour, sessions: sess.length, timed: timedSess.length,
       sessionLen: lb.map(function (b) { return { label: b[2], from: b[0], to: b[1], n: playedSess.filter(function (s) { return s >= b[0] && s < b[1]; }).length }; }),
       median: med(playedSess), mean: mean(playedSess), perDay: H.sessionsPerDay, daysPerWeek: mean(weekDays),
       weekend: (function () { var we = 0, wk = 0, nwe = 0, nwk = 0; for (var dd = start; dd <= end; dd++) { var g = new Date(Date.parse(D.day0 + 'T00:00:00Z') + dd * 864e5).getUTCDay(); if (g === 0 || g === 6) { we += dayCount[dd] || 0; nwe++; } else { wk += dayCount[dd] || 0; nwk++; } } return { weekend: nwe ? we / nwe : null, weekday: nwk ? wk / nwk : null }; })(),
@@ -1278,7 +1297,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
         return { key: N0.key, label: N0.label, kind: N0.kind, text: N0.text, window: N0.window, success: N0.success, since: N0.since,
           sent: c.length, opened: op.length, dismissed: c.filter(function (t) { return t.r === 'dismiss'; }).length, ignored: c.filter(function (t) { return t.r === 'ignore'; }).length,
           openPct: pct(op.length, c.length), inTime: inTime.length, inTimePct: pct(inTime.length, c.length),
-          won: inTime.filter(function (t) { return t.w; }).length, medianOpen: med(op.map(function (t) { return t.os; })),
+          won: inTime.filter(function (t) { return t.w; }).length, medianOpen: med(op.filter(function (t) { return t.os >= 0; }).map(function (t) { return t.os; })),
           toLapsed: lap.length, lapsedOpened: lapOpen.length, broughtBack: back.length, broughtBackPlayers: Object.keys(backPl).length,
           army: c.filter(function (t) { return t.a === 'army'; }).length };
       }),
@@ -1310,24 +1329,27 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   }
 
   // ---- what HQ records today, per question (from the 11/4 build + HQ v165) ----
+  // What HQ records, after cards A and B (11/25/2026: HQ v185, game v34.75, export wrx-2). The game's own events count each
+  // player from their first visit on v34.75; players who never come back keep card A's estimates (one visit a day, no clock).
   var COVERAGE = {
-    headline: { level: 'yes',    note: 'HQ counts new devices, players and revenue today (UTC days).' },
-    retention:{ level: 'partly', note: 'HQ shows rolling retention today. Classic day-N needs the activity ledger that started 11/10.' },
-    funnel:   { level: 'no',     note: 'The first-run steps (intro, first battle, tour) are not reported. Needs the ftue_step event.' },
-    wall:     { level: 'yes',    note: 'HQ computes the per-level stop rate from campaign progress today.' },
-    fail:     { level: 'yes',    note: 'Solo campaign results (won, lost, retreated) are reported today.' },
-    lastScreen:{ level: 'partly',note: 'The game sends the screen at every close, but HQ does not total it yet.' },
-    modes:    { level: 'partly', note: 'Battle starts are sent, but many modes share one tag and only solo campaign results come back.' },
-    raids:    { level: 'partly', note: 'Raid starts are sent. Solo raid and park results are not.' },
-    time:     { level: 'no',     note: 'No event carries the player\'s local time or the session length. Needs a timestamp and time zone on every event.' },
-    ads:      { level: 'partly', note: 'Ads shown and quits within 20 s of an ad are sent. HQ totals ads but not the quits.' },
-    money:    { level: 'yes',    note: 'Purchases and ad revenue (AppLovin MAX) are in HQ today. Sandbox buys and refunds are not separated yet.' },
-    notifs:   { level: 'no',     note: 'HQ knows who can get pushes and how they answered a call-out, but never whether a notification was opened or dismissed.' },
-    players:  { level: 'partly', note: 'HQ has a row per device with name, level, ads and purchases. Names are not unique, so lookups list every match.' },
-    ages:     { level: 'no',     note: 'GVT never asks a player\'s age, so no player row carries an age group yet.' },
-    platforms:{ level: 'no',     note: 'The platform is not attached to player rows today (the 11/10 report shows every device as unknown).' },
-    globe:    { level: 'partly', note: 'HQ keeps the Globe map and every attack and verdict, but the game logs Globe fights under the battlefield tag and the report shows none of it.' }
+    headline: { level: 'yes',    note: 'HQ counts new devices, players, visits and money.' },
+    retention:{ level: 'yes',    note: 'Every visit is recorded, so coming back on day 1 and day 7 is counted exactly.' },
+    funnel:   { level: 'yes',    note: 'The game sends each first-run step (intro, first battle, Sarge\'s tour, Level 1) for new players since Nov 25. Whether the first battle was a mercy win is not sent.' },
+    wall:     { level: 'yes',    note: 'HQ computes the per-level stop rate from campaign progress.' },
+    fail:     { level: 'yes',    note: 'Every battle\'s result (won, lost, retreated or walked away) is sent, in every mode.' },
+    lastScreen:{ level: 'yes',   note: 'The game sends the screen at every close. Players who have not visited since Nov 25 have none.' },
+    modes:    { level: 'yes',    note: 'Every battle\'s start and result is sent with its own mode, since Nov 25. Training and the Toy Express are counted by HQ but have no place here.' },
+    raids:    { level: 'yes',    note: 'Raid and park battles are sent with their name, tier, level and result, including the seasonal ones.' },
+    time:     { level: 'yes',    note: 'Each visit carries the player\'s own clock and time zone since Nov 25. Older visits have no time, so this page counts only visits since then.' },
+    ads:      { level: 'partly', note: 'Every ad moment is sent: shown or skipped and why, by place, and quitting after an ad. The money per ad is still an average from the ad network\'s report.' },
+    money:    { level: 'partly', note: 'Every purchase is recorded at the store\'s list price less its cut. Test purchases and refunds are not separated yet.' },
+    notifs:   { level: 'partly', note: 'The game\'s own reminders are sent with whether the player came back in time, and whether notifications are on. Swiping one away never reaches the game, so it cannot be counted.' },
+    players:  { level: 'yes',    note: 'HQ has a row per device with name, platform, language, level, ads and purchases. Names are not unique, so lookups list every match.' },
+    ages:     { level: 'no',     note: 'GVT does not ask players their age, so no player has an age group.' },
+    platforms:{ level: 'yes',    note: 'The game sends the platform at every visit since Nov 25. Players who have not visited since then show under All platforms only.' },
+    globe:    { level: 'yes',    note: 'Globe battles are sent with their own mode and result since Nov 25.' }
   };
+
 
   // ---- findings: what to fix, in plain words ----
   // Every finding: { sev, area, link, title, detail, action, impact, impactUnit }.
@@ -1582,7 +1604,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var pOk = function (k) { return isInt(k) && k >= 0 && k < P.length; };
 
     // ---- sessions and battles ----
-    var nb = 0, fam = {}, adsSeen = 0, mSpread = {}, endSeen = 0;
+    var nb = 0, fam = {}, adsSeen = 0, mSpread = {}, endSeen = 0, timed = 0;
     S.forEach(function (s, i) {
       var at = 'session ' + i;
       if (!s || typeof s !== 'object') { add('error', 's-obj', 'Every session must be an object.', at); return; }
@@ -1593,7 +1615,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       if (!isInt(s.ai) || s.ai < 0 || !isInt(s.ar) || s.ar < 0) add('error', 's-ads', '"ai" and "ar" (full-screen ads and ads watched for a reward) must be whole numbers, 0 if none.', at);
       else adsSeen += s.ai + s.ar;
       if (!Array.isArray(s.b)) { add('error', 's-b', 'Every session needs a "b" list of battles (empty if none).', at); return; }
-      if (!isInt(s.m) || s.m < 0 || s.m > 1439) add('warning', 's-m', '"m" (start minute on the player\'s clock, 0 to 1439) is missing, so "When they play" cannot use this session.', at); else mSpread[Math.floor(s.m / 60)] = 1;
+      if (!isInt(s.m) || s.m < 0 || s.m > 1439) add('warning', 's-m', '"m" (start minute on the player\'s clock, 0 to 1439) is missing, so "When they play" cannot use this session.', at); else { mSpread[Math.floor(s.m / 60)] = 1; timed++; }
       if (!SCREEN[s.end]) add('warning', 's-end', '"end" (the screen when the game closed) should be one of ' + Object.keys(SCREEN).join(', ') + '.', at + ': ' + JSON.stringify(s.end)); else endSeen++;
       if (s.adAgo != null && !isNum(s.adAgo)) add('warning', 's-adAgo', '"adAgo" should be seconds since the last ad, or -1.', at);
       if (s.pl != null && (typeof s.pl !== 'object' || Object.keys(s.pl).some(function (k) { return !PLACE[k] || !isInt(s.pl[k]); }))) add('warning', 's-pl', '"pl" should count full-screen ads by place (' + Object.keys(PLACE).join(', ') + ').', at);
@@ -1644,12 +1666,16 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     pg('stop', 'Where they stop', !S.length ? 'none' : st.ftue ? 'real' : 'partly', st.ftue ? 'Levels, giving up, the first steps and the last screen.' : 'Levels and giving up are real; "ftue" is 0 for everyone, so the first steps are empty.');
     var nf = Object.keys(fam).length;
     pg('modes', 'How they play', !nb ? 'none' : nf >= 2 ? 'real' : 'partly', !nb ? 'No battles in the file.' : nf >= 2 ? 'Battles split by way of playing.' : 'Every battle is the same kind, so there is no split to show.');
-    pg('time', 'When they play', share(st.tz) >= 0.5 && Object.keys(mSpread).length > 1 ? 'real' : 'none', share(st.tz) >= 0.5 ? 'Hours on each player\'s own clock.' : 'Most players have no time zone "tz".');
+    // real once enough sessions carry the player's own clock, however many older players have none (11/25: card B's note)
+    var spread = Object.keys(mSpread).length > 1;
+    pg('time', 'When they play', timed >= 20 && spread ? 'real' : timed ? 'partly' : 'none',
+      timed >= 20 && spread ? 'Hours on each player\'s own clock, from the ' + timed + ' sessions that carry one.'
+        : timed ? 'Only ' + timed + ' sessions carry the player\'s clock so far. The page fills in as players come back.' : 'No session carries the player\'s clock "m" yet.');
     pg('ads', 'Ads', adsSeen ? (endSeen ? 'real' : 'partly') : 'none', adsSeen ? 'Ads shown, ad money and quitting after an ad.' : 'No ads in the file.');
     pg('money', 'Money', B.length || adsSeen ? 'real' : 'none', B.length ? 'Purchases and ad money.' : adsSeen ? 'Ad money only: no purchases in the file.' : 'No money in the file.');
-    pg('notifs', 'Notifications', N.length ? 'real' : 'none', N.length ? 'Opened, swiped away and coming back.' : 'No notifications in the file.');
+    pg('notifs', 'Notifications', N.length ? 'real' : 'none', N.length ? 'Opened and coming back.' : 'No notifications in the file.');
     pg('players', 'Players', P.length ? 'real' : 'none', 'Every player by name.');
-    pg('ages', 'Who plays', st.age ? 'real' : 'none', st.age ? 'Age groups.' : 'No player has an age group.');
+    if (window.GVT.AGES_ON) pg('ages', 'Who plays', st.age ? 'real' : 'none', st.age ? 'Age groups.' : 'No player has an age group.');
     pg('platform', 'Platform filter', Object.keys(st.plat).length > 1 ? 'real' : 'partly', Object.keys(st.plat).length > 1 ? 'Players split by platform.' : 'Every player is on one platform (or none), so the filter has nothing to split.');
 
     // ---- the proof: draw every model once ----
@@ -2263,9 +2289,9 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   function kpis(list) { return h('div', { class: 'kpis' }, list.filter(Boolean).map(tile)); }
   // "About these numbers": definitions and what HQ tracks today, folded at the foot of a page
   function about(items, cov) {
-    var COVW = { yes: 'This page runs on real data HQ already has.', partly: 'Part of this page runs on real data HQ has today; the rest needs new tracking.', no: 'HQ does not track this yet: the numbers here only appear with example data or once the game sends them.' };
+    var COVW = { yes: 'This page runs on real data from HQ.', partly: 'Most of this page runs on real data from HQ; one part is still an estimate.', no: 'HQ has no data for this: the numbers here only appear with example data.' };
     return h('section', { class: 'card' }, h('details', { class: 'deep', style: { 'margin-top': '0', 'border-top': '0', 'padding-top': '0' } }, h('summary', { text: 'About these numbers' }),
-      h('ul', { class: 'about' }, (cov ? [h('li', { html: '<b>What is real today.</b> ' + (COVW[cov.level] || '') + (cov.note ? ' ' + esc(cov.note) : '') + ' <a href="#plan">See the Tracking plan →</a>' })] : [])
+      h('ul', { class: 'about' }, (cov ? [h('li', { html: '<b>What is real today.</b> ' + (COVW[cov.level] || '') + (cov.note ? ' ' + esc(cov.note) : '') + ' <a href="#plan">What the game tracks →</a>' })] : [])
         .concat((items || []).filter(Boolean).map(function (x) { return h('li', { html: x }); })))));
   }
 
@@ -2355,12 +2381,13 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // how they play
     var Mo = M.modes;
     if (Mo && Mo.families) {
-      var fams = Mo.families, tot = 0; fams.forEach(function (x) { tot += x.minutes || 0; });
-      var top = fams.slice().sort(function (a, b) { return b.minutes - a.minutes; })[0], st = Mo.stay;
+      // battles, not minutes: battles before Nov 25 carry no length (card A's note)
+      var fams = Mo.families, tot = 0; fams.forEach(function (x) { tot += x.battles || 0; });
+      var top = fams.slice().sort(function (a, b) { return b.battles - a.battles; })[0], st = Mo.stay;
       var r = st && st.pvp && st.pvp.yes.v != null && st.pvp.no.v ? st.pvp.yes.v / st.pvp.no.v : null;
-      cards.push(tot ? pic('How they play', ui.donut({ parts: fams.map(function (x) { return { label: x.label, v: x.minutes, color: ui.COLORS[x.key] }; }), center: f.pct(top.minutes * 100 / tot), centerSub: top.short.toLowerCase(),
-          fmt: function (v) { return f.num(v) + ' minutes of battle'; }, label: 'Battle time by way of playing' }),
-          '<b>Most battle time is ' + top.label.toLowerCase() + '.</b>' + (r != null && r > 1.05 ? ' Players who try PvP early are <b>' + (r >= 10 ? Math.round(r) : r.toFixed(1)) + '×</b> as likely to still be playing ' + st.days + ' days later.' : ''),
+      cards.push(tot ? pic('How they play', ui.donut({ parts: fams.map(function (x) { return { label: x.label, v: x.battles, color: ui.COLORS[x.key] }; }), center: f.pct(top.battles * 100 / tot), centerSub: top.short.toLowerCase(),
+          fmt: function (v) { return f.num(v) + (v === 1 ? ' battle' : ' battles'); }, label: 'Battles by way of playing' }),
+          '<b>Most battles are ' + top.label.toLowerCase() + '.</b>' + (r != null && r > 1.05 ? ' Players who try PvP early are <b>' + (r >= 10 ? Math.round(r) : r.toFixed(1)) + '×</b> as likely to still be playing ' + st.days + ' days later.' : ''),
           { href: '#modes', text: 'How they play →' })
         : none('How they play', 'No battles', { t: 'No battles ' + inR, b: 'Try a longer range or all platforms.' }, { href: '#modes', text: 'How they play →' }));
     } else cards.push(none('How they play', 'Not tracked yet', { t: 'HQ cannot tell solo, PvP and with-friends battles apart yet', b: '<a href="#plan">What HQ needs →</a>' }));
@@ -2400,7 +2427,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var N = M.notifs;
     if (N && N.kinds) {
       var o = 0, d = 0, ig = 0; N.kinds.forEach(function (k) { o += k.opened || 0; d += k.dismissed || 0; ig += k.ignored || 0; });
-      cards.push(o + d + ig ? pic('What players do with notifications', ui.donut({ parts: [{ label: 'Opened', v: o, color: 'var(--green)' }, { label: 'Swiped away', v: d, color: 'var(--tan)' }, { label: 'Never touched', v: ig, color: GRAY }],
+      var SW = d > 0 || (M.source && M.source.kind === 'demo'); // real files cannot see a swipe (card B's note)
+      cards.push(o + d + ig ? pic('What players do with notifications', ui.donut({ parts: SW ? [{ label: 'Opened', v: o, color: 'var(--green)' }, { label: 'Swiped away', v: d, color: 'var(--tan)' }, { label: 'Never touched', v: ig, color: GRAY }] : [{ label: 'Opened', v: o, color: 'var(--green)' }, { label: 'Not opened', v: d + ig, color: GRAY }],
           center: f.num(o + d + ig), centerSub: 'sent', fmt: function (v) { return f.num(v) + ' notifications'; }, label: 'Notifications by what the player did' }),
           '<b>' + f.pct(o * 100 / (o + d + ig)) + ' are opened.</b>' + (ok(N.pushOnPct) ? ' ' + f.pct(N.pushOnPct) + ' of phone players have notifications turned on.' : ''),
           { href: '#notifs', text: 'Notifications →' })
@@ -2408,7 +2436,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     } else cards.push(none('What players do with notifications', 'Not tracked yet', { t: 'HQ never learns whether a notification was opened', b: '<a href="#plan">What HQ needs →</a>' }));
     // who plays: the age groups (made up in the example data; GVT does not know ages yet)
     var AG = M.ages;
-    if (AG && AG.active) {
+    if (G.AGES_ON && AG && AG.active) {
       var agK = AG.rows.filter(function (x) { return x.key !== 'unknown'; }), agTop = agK.slice().sort(function (a, b) { return b.active - a.active; })[0];
       var u18 = AG.rows.filter(function (x) { return x.key === 'u13' || x.key === '13-17'; }).reduce(function (a, x) { return a + x.active; }, 0) * 100 / AG.active;
       var agCard = pic('Who plays', ui.hbars({ labelW: '26%', rows: AG.rows.map(function (x) { return { label: x.label, v: x.activePct || 0, color: x.key === 'unknown' ? GRAY : 'var(--green)', valueLabel: f.pct(x.activePct) }; }) }),
@@ -2717,7 +2745,11 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
         return ui.table({ caption: 'Last screen before leaving', sort: 'n', rows: LS.rows, cols: [{ key: 'label', label: 'Screen' }, { key: 'n', label: 'Players', n: true, fmt: f.num }, { key: 's', label: 'Share', n: true, value: function (r) { return r.n * 100 / lsTot; }, fmt: function (v) { return pc(v); } }] });
       }));
       c5.appendChild(h('div', { class: 'means', html: '<b>' + cap(ui.share(firstRun * 100 / lsTot)) + ' left on one of the first screens</b>, most often the ' + esc(String(LS.rows[0].label).toLowerCase()) + '. ' +
-        (adRow && adRow.n ? f.num(adRow.n) + ' left during or right after an ad. <a href="#ads">See ads →</a>' : '') }));
+        (adRow && adRow.n ? f.num(adRow.n) + ' left during or right after an ad. <a href="#ads">See ads →</a>' : '') +
+        (LS.unknown ? ' ' + f.num(LS.unknown) + (LS.unknown === 1 ? ' player' : ' players') + ' who stopped before Nov 25 have no last screen and are left out.' : '') }));
+    } else if (LS && LS.unknown) {
+      c5.body.appendChild(ui.empty({ tag: 'Filling in', title: 'No last screen recorded yet for players who stopped',
+        body: 'The game sends the last screen since Nov 25. The ' + f.num(LS.unknown) + (LS.unknown === 1 ? ' player' : ' players') + ' who stopped in this period left before that, so their last screen is not known.' }));
     } else if (!LS) {
       c5.body.appendChild(ui.empty({ tag: 'Not totalled yet', title: 'HQ does not total the last screen yet',
         body: 'The game already sends the screen the player was on every time the app closes (<code>end</code>), and after a crash or force-quit (<code>endx</code>, at the next launch). ' +
@@ -2840,7 +2872,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   G.sections = G.sections || [];
 
   // Which raid each park's rung-20 key opens (from the 11/4 build: silver key, bronze key, sheriff's badge, teddy key, moon key)
-  var PARK_RAID = { yeti: 'icecastle', dino: 'rex', western: 'croak', teddy: 'pillow', gnome: 'palace' };
+  var PARK_RAID = { yeti: 'icecastle', dino: 'rex', western: 'croak', teddy: 'pillow', moon: 'palace' };
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   // the three ways of playing, in this page's words
   var FAM = {
@@ -3421,7 +3453,15 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     }
 
     // ---- the numbers behind every line ----
-    var total = T.sessions, bh = T.byHour, peak = window3(bh, 3), quiet = window3(bh, 3, true);
+    // the clock needs sessions that carry the player's own time: card B's real sessions do, card A's estimates do not
+    if (T.timed == null) T.timed = T.sessions; // example data: every session has a time
+    if (!T.timed) {
+      wrap.appendChild(ui.empty({ tag: 'Filling in', title: 'No visit in this range carries the player\'s clock yet',
+        body: 'The game started sending the time of each visit on Nov 25. Every player is counted from their next visit, so this page fills in over the coming days.' }));
+      wrap.appendChild(aboutBox(ui, cov));
+      return;
+    }
+    var total = T.timed, bh = T.byHour, peak = window3(bh, 3), quiet = window3(bh, 3, true);
     var peakPct = peak.n * 100 / total, top = peak.hours.slice().sort(function (a, b) { return bh[b] - bh[a]; })[0];
     var lenTot = sum(T.sessionLen.map(function (b) { return b.n; }));
     var under3 = sum(T.sessionLen.filter(function (b) { return b.to <= 180; }).map(function (b) { return b.n; }));
@@ -3446,11 +3486,12 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     wrap.appendChild(ui.short(lines));
 
     // ---- key numbers ----
-    var tr = ui.trend;
+    var before = /^\d+$/.test(String(M.filters.range)) ? 'the ' + M.filters.range + ' days before' : '';
+    var tr = function (cur, prev, o) { o = o || {}; o.before = before; return ui.trend(cur, prev, o); };
     wrap.appendChild(ui.kpis([
-      { label: 'Typical visit', value: f.minutes(T.median), sub: 'Half of visits are shorter.', trend: tr(T.median, P.sessionMedian) },
+      { label: 'Typical visit', value: f.minutes(T.median), sub: 'Half of visits are shorter.', trend: tr(T.median, P.sessionMedian, { fmt: f.minutes }) },
       { label: 'Days a week', value: T.daysPerWeek != null ? T.daysPerWeek.toFixed(1) : '–', sub: T.daysPerWeek != null ? 'Days a player plays, out of 7.' : 'Not enough play to tell.' },
-      { label: 'Visits on a day they play', value: T.perDay != null ? T.perDay.toFixed(1) : '–', sub: T.perDay != null ? 'How many times a player opens GVT that day.' : 'Not enough play to tell.', trend: tr(T.perDay, P.sessionsPerDay) },
+      { label: 'Visits on a day they play', value: T.perDay != null ? T.perDay.toFixed(1) : '–', sub: T.perDay != null ? 'How many times a player opens GVT that day.' : 'Not enough play to tell.', trend: tr(T.perDay, P.sessionsPerDay, { fmt: function (v) { return v.toFixed(1); } }) },
       { label: 'A new player\'s first visit', value: f.minutes(T.firstSession), sub: 'Half are shorter, counting players who leave at once.' }
     ]));
 
@@ -4515,12 +4556,15 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     kinds.forEach(function (k) { tot.sent += k.sent; tot.opened += k.opened; tot.dismissed += k.dismissed; tot.ignored += k.ignored; tot.lap += k.toLapsed; tot.lapOpen += k.lapsedOpened; tot.back += k.broughtBack || 0; });
     var MIN_N = 20, SMALL_N = 30, rkK = byKey.rk;
     var openAll = pctOf(tot.opened, tot.sent), disAll = pctOf(tot.dismissed, tot.sent), ignAll = pctOf(tot.ignored, tot.sent), backAll = pctOf(tot.back, tot.lap);
+    // a swipe never reaches the app (card B's note), so real files say only opened or not; the example data keeps the split
+    var SW = tot.dismissed > 0 || (M.source && M.source.kind === 'demo');
+    var notOpenAll = pctOf(tot.dismissed + tot.ignored, tot.sent);
     var ranked = live.filter(function (k) { return k.sent >= MIN_N; }).sort(function (a, b) { return b.openPct - a.openPct; });
     var hasPhone = N.pushOnPct != null;
 
     // ---- the short version ----
     var lines = [];
-    if (tot.sent) lines.push('<b>' + cap(share(openAll)) + ' notifications get opened.</b> ' + cap(share(disAll)) + ' are swiped away, and ' + share(ignAll) + ' are never touched.' +
+    if (tot.sent) lines.push('<b>' + cap(share(openAll)) + ' notifications get opened.</b> ' + (SW ? cap(share(disAll)) + ' are swiped away, and ' + share(ignAll) + ' are never touched.' : 'The rest are not opened. The game cannot tell a swiped-away notification from one left alone.') +
       (tot.sent < MIN_N ? ' Very few were sent, so read this with care.' : ''));
     else lines.push('<b>No notifications went to players ' + inR + '.</b> Try a longer date range or all platforms.');
     if (tot.lap) lines.push(backAll >= 10
@@ -4533,7 +4577,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // ---- the key numbers ----
     main.appendChild(ui.kpis([
       { label: 'Opened', value: f.pct(openAll), sub: tot.sent ? f.num(tot.opened) + ' of ' + f.num(tot.sent) + ' notifications.' : 'None sent ' + inR + '.' },
-      { label: 'Swiped away', value: f.pct(disAll), sub: tot.sent ? 'A clear no from the player.' : 'None sent ' + inR + '.' },
+      SW ? { label: 'Swiped away', value: f.pct(disAll), sub: tot.sent ? 'A clear no from the player.' : 'None sent ' + inR + '.' }
+        : { label: 'Not opened', value: f.pct(notOpenAll), sub: tot.sent ? 'Swiped away or left alone: the game cannot tell which.' : 'None sent ' + inR + '.' },
       { label: 'Brought a stopped player back', value: tot.lap ? f.num(tot.back) : '–', sub: tot.lap ? 'Out of ' + f.num(tot.lap) + ' sent to players who had stopped.' : 'None went to players who had stopped.' },
       { label: 'Notifications turned on', value: hasPhone ? f.pct(N.pushOnPct) : '–', sub: hasPhone ? 'Of the ' + f.num(N.phonePlayed) + ' phone players who played.' : 'No phone players in this filter.' }
     ]));
@@ -4542,13 +4587,13 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // 1. what players do with them (the Briefing's donut)
     var whatCard = ui.card({ title: 'What players do with them', howto: tot.sent ? 'Every notification sent ' + inR + ', by what the player did with it.' : null });
     if (tot.sent) {
-      whatCard.body.appendChild(ui.withTable(ui.donut({ parts: [{ label: 'Opened', v: tot.opened, color: 'var(--green)' }, { label: 'Swiped away', v: tot.dismissed, color: 'var(--tan)' }, { label: 'Never touched', v: tot.ignored, color: GRAY }],
+      whatCard.body.appendChild(ui.withTable(ui.donut({ parts: SW ? [{ label: 'Opened', v: tot.opened, color: 'var(--green)' }, { label: 'Swiped away', v: tot.dismissed, color: 'var(--tan)' }, { label: 'Never touched', v: tot.ignored, color: GRAY }] : [{ label: 'Opened', v: tot.opened, color: 'var(--green)' }, { label: 'Not opened', v: tot.dismissed + tot.ignored, color: GRAY }],
         center: f.num(tot.sent), centerSub: 'sent', fmt: function (v) { return f.num(v) + ' notifications'; }, label: 'Notifications by what the player did' }), function () {
-        return ui.table({ sortable: false, rows: [{ s: 'Opened', n: tot.opened }, { s: 'Swiped away', n: tot.dismissed }, { s: 'Never touched', n: tot.ignored }],
+        return ui.table({ sortable: false, rows: SW ? [{ s: 'Opened', n: tot.opened }, { s: 'Swiped away', n: tot.dismissed }, { s: 'Never touched', n: tot.ignored }] : [{ s: 'Opened', n: tot.opened }, { s: 'Not opened', n: tot.dismissed + tot.ignored }],
           cols: [{ key: 's', label: 'What the player did' }, { key: 'n', label: 'Notifications', n: true, fmt: function (v) { return f.num(v); } },
             { key: 'p', label: 'Of all sent', n: true, value: function (r) { return pctOf(r.n, tot.sent); }, fmt: function (v) { return f.pct(v); } }] });
       }));
-      whatCard.appendChild(h('div', { class: 'means', html: '<b>' + cap(share(openAll)) + ' get opened.</b> Swiped away is a clear no. Never touched means the player missed it or let it run out.' }));
+      whatCard.appendChild(h('div', { class: 'means', html: '<b>' + cap(share(openAll)) + ' get opened.</b> ' + (SW ? 'Swiped away is a clear no. Never touched means the player missed it or let it run out.' : 'Not opened covers both swiped away and left alone: a swipe never reaches the game.') }));
     } else whatCard.body.appendChild(ui.empty({ tag: 'None sent', title: 'No notifications ' + inR, body: 'Try a longer date range or all platforms. Web, Steam and Amazon players cannot get the server\'s notifications.' }));
 
     // 2. players who had stopped
@@ -4604,14 +4649,18 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
             { key: 'label', label: 'Notification', cellStyle: function () { return 'min-width:10em'; }, fmt: function (v) { return '<b>' + esc(v) + '</b>'; } },
             { key: 'sent', label: 'Sent', n: true, fmt: function (v) { return f.num(v); } },
             { key: 'openPct', label: 'Opened', n: true, fmt: function (v) { return f.pct(v); } },
+          ].concat(SW ? [
             { key: 'dis', label: 'Swiped away', n: true, value: function (r) { return pctOf(r.dismissed, r.sent); }, fmt: function (v) { return f.pct(v); } },
-            { key: 'ign', label: 'Never touched', n: true, value: function (r) { return pctOf(r.ignored, r.sent); }, fmt: function (v) { return f.pct(v); } },
+            { key: 'ign', label: 'Never touched', n: true, value: function (r) { return pctOf(r.ignored, r.sent); }, fmt: function (v) { return f.pct(v); } }
+          ] : [
+            { key: 'ign', label: 'Not opened', n: true, value: function (r) { return pctOf(r.dismissed + r.ignored, r.sent); }, fmt: function (v) { return f.pct(v); } }
+          ]).concat([
             { key: 'inTimePct', label: 'Came back in time', n: true, title: 'Came back within the notification\'s time limit, out of all sent', fmt: function (v) { return f.pct(v); } },
             { key: 'medianOpen', label: 'Half opened within', n: true, title: 'Half of the players who opened it did so faster than this', fmt: function (v) { return secs(v); } },
             { key: 'toLapsed', label: 'Sent to players who had stopped', title: 'Players with 7 days or more without playing', n: true, fmt: function (v) { return f.num(v); } },
             { key: 'lapsedOpened', label: 'They opened', n: true, fmt: function (v, r) { return r.toLapsed ? f.num(v) + ' <span style="color:var(--muted)">(' + f.pct(pctOf(v, r.toLapsed)) + ')</span>' : '–'; } },
             { key: 'broughtBack', label: 'Then played that day', n: true, title: 'Opened by a player who had stopped, then played that same day', fmt: function (v, r) { return r.toLapsed ? f.num(v) + ' <span style="color:var(--muted)">(' + f.num(r.broughtBackPlayers) + (r.broughtBackPlayers === 1 ? ' player' : ' players') + ')</span>' : '–'; } }
-          ] });
+          ]) });
         }),
         means: cmpMeans }));
     }
@@ -4634,9 +4683,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
           ui.funnel({ steps: steps, color: 'var(--green)', lastIsOutcome: true }),
           ui.split({ label: 'What happened to the ' + k.sent + ' sent', fmt: function (v) { return f.num(v) + ' sent'; }, parts: [
             { label: 'opened', v: k.opened, color: 'var(--green)' },
-            { label: 'swiped away', v: k.dismissed, color: 'var(--tan)' },
-            { label: 'never touched', v: k.ignored, color: GRAY }
-          ] }),
+          ].concat(SW ? [{ label: 'swiped away', v: k.dismissed, color: 'var(--tan)' }, { label: 'never touched', v: k.ignored, color: GRAY }] : [{ label: 'not opened', v: k.dismissed + k.ignored, color: GRAY }]) }),
           h('div', { class: 'kfoot' },
             k.medianOpen != null ? h('span', null, 'Half the players who opened it did so within ', h('b', { text: secs(k.medianOpen) }), '.') : h('span', { text: 'Nobody opened it ' + inR + '.' }),
             k.army ? h('span', null, h('b', { text: f.num(k.army) }), ' let their army fight instead.') : null));
@@ -4650,8 +4697,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
             ui.withTable(chart, function () {
               return ui.table({ sortable: false, rows: [
                 { s: 'Sent', n: k.sent }, { s: 'Opened', n: k.opened }, { s: k.success + ' (within ' + k.window + ' seconds)', n: k.inTime }, { s: 'Won', n: k.won },
-                { s: 'Swiped away', n: k.dismissed }, { s: 'Never touched', n: k.ignored }
-              ], cols: [{ key: 's', label: 'Step' }, { key: 'n', label: 'Count', n: true, fmt: function (v) { return f.num(v); } },
+              ].concat(SW ? [{ s: 'Swiped away', n: k.dismissed }, { s: 'Never touched', n: k.ignored }] : [{ s: 'Not opened', n: k.dismissed + k.ignored }]), cols: [{ key: 's', label: 'Step' }, { key: 'n', label: 'Count', n: true, fmt: function (v) { return f.num(v); } },
                 { key: 'p', label: 'Of all sent', n: true, value: function (r) { return pctOf(r.n, k.sent); }, fmt: function (v) { return f.pct(v); } }] });
             })
           ],
@@ -4675,7 +4721,8 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
 
     // ---- about these numbers ----
     main.appendChild(ui.about([
-      '<b>Opened</b> means the player tapped the notification. <b>Swiped away</b> means they dismissed it. <b>Never touched</b> means it sat there until it ran out.',
+      SW ? '<b>Opened</b> means the player tapped the notification. <b>Swiped away</b> means they dismissed it. <b>Never touched</b> means it sat there until it ran out.'
+        : '<b>Opened</b> means the player came back inside the notification\'s time window. <b>Not opened</b> covers both swiped away and left alone: a swipe never reaches the game, so the two cannot be told apart.',
       '<b>Came back in time</b> means the player answered within the notification\'s time limit. For a call-out, that is choosing DEFEND within ' + rkWin + ' seconds.',
       '<b>Stopped</b> means 7 days or more without playing. Opening a notification is not the same as coming back, so a player only counts as <b>brought back</b> if they played after the open, that same day.',
       '<b>Turned on</b> counts iPhone, iPad and Android players who played ' + inR + '.',
@@ -4874,7 +4921,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var topSpender = payers.filter(function (r) { return r.paid === topPaid; })[0] || null;
     var topPlayer = P.filter(function (r) { return r.status !== 'bounced' && r.minutes >= 1; })[0] || null; // P is sorted by play time
     var lines = [];
-    if (!total) lines.push('<b>No players here yet.</b> Try all platforms or all ages at the top.');
+    if (!total) lines.push('<b>No players here yet.</b> Try all platforms' + (G.AGES_ON ? ' or all ages' : '') + ' at the top.');
     else {
       lines.push('<b>' + f.num(total) + ' ' + plural(total, 'player has', 'players have') + ' opened GVT' + (plat ? ' on ' + esc(plat) : '') + ' so far.</b> ' +
         (by.playing ? f.num(by.playing) + ' played in the last 3 days. ' : 'Nobody played in the last 3 days. ') +
@@ -5105,7 +5152,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     main.appendChild(h('dl', { class: 'facts' },
       fact('Short id', h('span', { title: p.uid, style: { 'font-family': 'var(--mono)' }, text: shortId(p.uid) })),
       fact('Plays on', platLabel),
-      fact('Age', ageWords),
+      G.AGES_ON ? fact('Age', ageWords) : null,
       fact('Installed', dDay(X.installed)),
       fact('Last played', dDay(X.lastSeen) + ' (' + ago(X.quiet) + ')'),
       fact('Notifications', phone ? (p.push ? 'Turned on' : 'Turned off') : 'Not available on ' + platLabel),
@@ -5551,7 +5598,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     main.appendChild(ui.card({ title: 'When this goes into the game', children: h('ul', { class: 'team-notes' },
       h('li', { html: 'HQ should keep this team list, or a <code>team</code> flag on each player row, and leave those players out of the daily report and the player export.' }),
       h('li', { html: 'A GVT Player Export that marks a player <code>team: true</code> is always hidden here, whatever the list says.' }),
-      h('li', { html: 'Test purchases from TestFlight or sandbox accounts should be dropped too. HQ cannot tell them apart from real ones yet (see the Tracking plan).' })) }));
+      h('li', { html: 'Test purchases from TestFlight or sandbox accounts should be dropped too. HQ cannot tell them apart from real ones yet (see What the game tracks).' })) }));
   }
 
   function lastDay(raw, i, inst) { var d = inst; raw.sessions.forEach(function (s) { if (s.p === i && s.d > d) d = s.d; }); return d; }
@@ -5579,7 +5626,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       live ? '<b>Right now every page shows real players</b>, from ' + ui.esc(M.source && M.source.label === 'HQ player export' ? 'HQ' : 'a player file') + '.'
         : rep ? '<b>Right now the pages show Wyatt\'s daily report.</b> It has totals, not one row per player, so some pages stay empty.'
         : '<b>Right now every page shows made-up example players.</b>',
-      '<b>Once HQ serves the player file, paste its link once</b> and every page switches to real players, each time you open the War Room. The link stays in this browser only.',
+      '<b>Paste the link to HQ\'s player file once</b> and every page switches to real players, each time you open the War Room. The link stays in this browser only. Ask Wyatt for it.',
       '<b>Every file is checked first.</b> A file with problems is refused, and this page lists what to fix in plain words.'
     ]));
 
@@ -5592,7 +5639,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') load(); });
     var c1 = ui.card({ title: 'Load real players from HQ', howto: 'Paste the link to HQ\'s player file. It is the same kind of link as the daily report\'s, with HQ\'s key in it.' });
     c1.body.appendChild(h('div', { class: 'hq-status', role: 'status' }, ui.pill(pill[0], pill[1]),
-      h('span', { html: HQ.msg ? ui.esc(HQ.msg) + (st === 'ok' && HQ.at ? ' (' + ui.esc(HQ.at) + ')' : '') : D.saved ? 'A link is saved in this browser. It loads each time you open the War Room.' : 'No link yet. HQ does not serve the player file yet: it is part of the Tracking plan.' })));
+      h('span', { html: HQ.msg ? ui.esc(HQ.msg) + (st === 'ok' && HQ.at ? ' (' + ui.esc(HQ.at) + ')' : '') : D.saved ? 'A link is saved in this browser. It loads each time you open the War Room.' : 'No link yet. Paste the link to HQ\'s player file below.' })));
     if (HQ.url && st !== 'idle') c1.body.appendChild(h('p', { class: 'howto', style: { 'overflow-wrap': 'anywhere' }, text: 'Link: ' + D.safe(HQ.url) }));
     c1.body.appendChild(h('div', { class: 'hq-row' }, input, h('button', { type: 'button', class: 'btn primary', id: 'hq-load', disabled: st === 'loading' || null, on: { click: load } }, st === 'loading' ? 'Loading…' : 'Load')));
     c1.body.appendChild(h('label', { class: 'hq-check', for: 'hq-remember' }, remember, ' Remember the link in this browser, and load it each time'));
@@ -5612,10 +5659,10 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     main.appendChild(c2);
 
     // ---- 3. for whoever builds the export ----
-    main.appendChild(ui.card({ title: 'For whoever builds the export', howto: 'What HQ needs to serve, in short. The Tracking plan has every field.',
+    main.appendChild(ui.card({ title: 'How HQ serves the file', howto: 'In place since Nov 24. Useful if the file ever needs checking or rebuilding.',
       children: h('ol', { class: 'about', style: { 'padding-left': '20px' } },
-        h('li', { html: '<b>One JSON file</b> in the format on the <a href="#plan">Tracking plan</a> ("GVT Player Export v1"). <a href="' + SAMPLE_URL + '" download>Download a sample file</a>: 40 made-up players in the exact format, which passes the checker.' }),
-        h('li', { html: '<b>Served by HQ at a link with the admin key in it</b>, the same way as the daily report\'s <code>kpi.json</code>. For example <code>/gvt/export.json?key=…</code>.' }),
+        h('li', { html: '<b>One JSON file</b> in the format on <a href="#plan">What the game tracks</a> ("GVT Player Export v1"). <a href="' + SAMPLE_URL + '" download>Download a sample file</a>: 40 made-up players in the exact format, which passes the checker.' }),
+        h('li', { html: '<b>Served by HQ at <code>/gvt/export.json?key=…</code></b>, with a key of its own in the link, rebuilt every 15 minutes.' }),
         h('li', { html: '<b>HQ must let this page read it.</b> The answer needs the header <code>Access-Control-Allow-Origin: ' + ui.esc(location.origin === 'null' ? 'https://skypilot82.github.io' : location.origin) + '</code> (or wherever the War Room is opened from).' }),
         h('li', { html: '<b>Check it before calling it done:</b> <code>node tools/check-export.mjs export.json</code> (or the live link) in the War Room folder. It prints the same report as this page and ends with "READY" when the file is good.' }))
     }));
@@ -5654,7 +5701,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
 })();
 
 /* ---- sec-plan.js ---- */
-/* GVT War Room · the Tracking plan : what the game needs to send so every page here runs on real players.
+/* GVT War Room · What the game tracks (was the Tracking plan until cards A and B shipped, 11/25): what HQ records and what is still missing.
    For Wyatt (who puts the tracking into the game) and for anyone asking "where does this number come from?".
    Reads M.coverage (engine COVERAGE) and, in real-report mode, which model blocks the report fills.
    Everything else on the page is the plan itself: it renders the same in both data modes. */
@@ -5667,178 +5714,71 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   // cov = key in engine COVERAGE (one row per key, so the totals in the answer and the table match).
   var NEEDS = [
     { q: 'New players and bounce', page: 'briefing', pageLabel: 'Briefing', cov: 'headline',
-      add: '<code>install</code> with where the player came from, and the platform on every row so web page loads and test devices can be told apart.' },
+      add: 'Nothing.' },
     { q: 'Retention (classic and rolling)', page: 'stop', pageLabel: 'Where they stop', cov: 'retention',
-      add: 'Keep the activity ledger that started 11/10 running. A <code>session_start</code> with the player\'s day makes classic day-N exact.' },
+      add: 'Nothing.' },
     { q: 'First-minute steps', page: 'stop', pageLabel: 'Where they stop', cov: 'funnel',
-      add: '<code>ftue_step</code> at each beat: title tap, intro, first battle, Sarge\'s tour, name card, first Level 1 win.' },
+      add: 'Whether the first battle was a mercy win. The save keeps no mark of it.' },
     { q: 'The level wall', page: 'stop', pageLabel: 'Where they stop', cov: 'wall',
-      add: 'Nothing needed. <code>battle_end</code> with the try number would also show how many tries came before a player quit.' },
+      add: 'Nothing.' },
     { q: 'How hard each level is', page: 'stop', pageLabel: 'Where they stop', cov: 'fail',
-      add: '<code>battle_end</code> for every mode. Report levels above 30 one by one (today they fold into "31+").' },
+      add: 'Nothing.' },
     { q: 'Last screen before leaving', page: 'stop', pageLabel: 'Where they stop', cov: 'lastScreen',
-      add: 'HQ only: total the <code>end</code> and <code>endx</code> screens it already receives.' },
+      add: 'Nothing for visits since Nov 25. Older visits have no last screen.' },
     { q: 'Ways of playing', page: 'modes', pageLabel: 'How they play', cov: 'modes',
-      add: '<code>battle_start</code> with one tag per mode (Survival, Mom, the Toy Express and the Globe get their own) and <code>battle_end</code> for all modes.' },
+      add: 'Training and the Toy Express are counted by HQ but have no place on this site yet.' },
     { q: 'Raids and parks', page: 'modes', pageLabel: 'How they play', cov: 'raids',
-      add: '<code>battle_end</code> for solo raids and parks with the tier and rung. Post party raid and park results as real wins and losses.' },
+      add: 'Nothing.' },
     { q: 'The Globe', page: 'modes', pageLabel: 'How they play', cov: 'globe',
-      add: '<code>battle_start</code> with the Globe as its mode and the country, and <code>battle_end</code> with the result.' },
+      add: 'Nothing.' },
     { q: 'Time of day and session length', page: 'time', pageLabel: 'When they play', cov: 'time',
-      add: '<code>client_ts</code> and <code>tz_offset_min</code> on every event, plus <code>session_start</code> and <code>session_end</code> with time on screen.' },
+      add: 'Nothing for visits since Nov 25. Older visits have no time of day.' },
     { q: 'Ads and quitting after ads', page: 'ads', pageLabel: 'Ads', cov: 'ads',
-      add: 'HQ: total the "ad" and "ad+" quit screens. Game: <code>ad_opportunity</code> per placement, with the reason when no ad showed.' },
+      add: 'The money each ad earned. The phone apps do not pass it to the game, so this needs a new store build. Until then ad money uses the ad network\'s average.' },
     { q: 'Money and lifetime value', page: 'money', pageLabel: 'Money', cov: 'money',
-      add: 'A test-purchase flag and refunds on <code>purchase</code>. The No Ads and paid flags on /sync.' },
+      add: 'Test purchases and refunds are not separated, and each purchase\'s own currency is not kept. Refunds need the stores\' notices at HQ.' },
     { q: 'Notifications', page: 'notifs', pageLabel: 'Notifications', cov: 'notifs',
-      add: 'HQ only, today: total the call-out and Globe answers it already stores. Then <code>push_sent</code> from HQ, <code>push_open</code> and <code>push_dismiss</code> from the phone, <code>notif_permission</code> and <code>local_notif</code>.' },
+      add: 'Swiped-away notifications. A swipe never reaches the app, so this needs a new store build.' },
     { q: 'Player lookup', page: 'players', pageLabel: 'Players', cov: 'players',
-      add: 'Platform, language, time zone and the paid flag on /sync. The lookup lists every device that shares a name.' },
-    { q: 'Age groups', page: 'ages', pageLabel: 'Who plays', cov: 'ages',
-      add: 'An <code>age</code> group on each player row (<code>u13</code>, <code>13-17</code>, <code>18-24</code>, <code>25-34</code>, <code>35+</code> or <code>unknown</code>), never a birthday. GVT has no source for it yet. The simplest is one optional tap on an age range (no birthday, no year). Google Analytics can estimate adult age ranges, but only as totals, never per player and never under 18, so it cannot fill this field. Under-13 players bring COPPA rules: check them before storing anything.' },
+      add: 'Nothing.' },
+    { q: 'Age groups', page: null, pageLabel: 'Not shown on this site', cov: 'ages',
+      add: 'No source. GVT does not ask players their age, and the team decided not to ask. Google\'s phone age signal may not be used for analytics.' },
     { q: 'Platform', page: null, pageLabel: 'Platform filter in the top bar', cov: 'platforms',
-      add: '<code>shell</code> (iPhone, Android, Amazon, Steam or web) on /sync and every /tel event. The game already knows it.' }
+      add: 'Nothing. Players who have not visited since Nov 25 have no platform yet.' }
   ];
   // the same words as the coverage chip at the top of every page
-  var COVTXT = { yes: ['good', 'Tracked in HQ'], partly: ['warning', 'Partly tracked'], no: ['critical', 'Not tracked yet'] };
+  var COVTXT = { yes: ['good', 'Tracked in HQ'], partly: ['warning', 'Partly tracked'], no: ['critical', 'Not tracked'] };
   // short names for the questions a coverage key answers (used in the answer box)
   var COVNAME = { headline: 'new players', retention: 'retention', funnel: 'first-minute steps', wall: 'the level wall', fail: 'level difficulty',
     lastScreen: 'last screen', modes: 'ways of playing', raids: 'raids and parks', time: 'time of day', ads: 'ads', money: 'money',
     notifs: 'notifications', players: 'player lookup', platforms: 'platform', globe: 'the Globe' };
 
   // ---- quick wins: little or no game change ----
-  var WINS = [
-    { title: 'Leave the team out at HQ', effort: 'No game change', who: 'HQ',
-      body: 'Keep the War Room\'s team list at HQ (or a <code>team</code> flag on each player row) and skip those players in the daily report and the player export. Mark them <code>team: true</code> in the export and the War Room hides them automatically.',
-      unlocks: 'Numbers free of the team\'s own testing: test purchases, hours of play and ads no real player saw. In the example data five testers add about $100 a month of money that is not real.', links: [['team', 'Team filter']] },
-    { title: 'Total the quit screens HQ already receives', effort: 'No game change', who: 'HQ',
-      body: 'Every close already sends <code>end</code> or <code>endx</code> with the screen the player was on. HQ only needs to count them.',
-      unlocks: 'Last screen before leaving, quitting during or right after an ad ("ad" and "ad+"), and quitting on the defeat screen.', links: [['stop', 'Where they stop'], ['ads', 'Ads']] },
-    { title: 'Total the call-out and Globe answers HQ already stores', effort: 'No game change', who: 'HQ',
-      body: 'HQ keeps every call-out and Globe attack, the answer (DEFEND, LET MY ARMY FIGHT or none) and the fight that followed. HQ only needs to count them per day.',
-      unlocks: 'How many call-outs and Globe attacks are defended inside the 90 seconds, how many players let their army fight, and how many of those fights are won. These are the last two steps on each notification card.', links: [['notifs', 'Notifications']] },
-    { title: 'Log each push HQ sends', effort: 'No game change', who: 'HQ',
-      body: 'HQ sends call-out and Globe pushes itself. Write one row per push: who, which kind, which channel, delivered or not.',
-      unlocks: 'How many notifications go out per player, the base for any open rate.', links: [['notifs', 'Notifications']] },
-    { title: 'Send the platform on /sync and /tel', effort: 'Small game change', who: 'Game',
-      body: 'The game already tells iPhone, Android, Amazon, Steam and web apart (the shell mark). Add it as one field.',
-      unlocks: 'The platform filter on every page, and phone-only ad numbers.', links: [['briefing', 'Briefing']] },
-    { title: 'Send the phone\'s time and time zone', effort: 'Small game change', who: 'Game',
-      body: 'Add <code>client_ts</code> (the phone\'s clock) and <code>tz_offset_min</code> (its time zone) to /sync and every /tel event.',
-      unlocks: 'Time of day, the player\'s own day, and late events placed on the right day.', links: [['time', 'When they play']] },
-    { title: 'Report the No Ads and paid flags', effort: 'Small game change', who: 'Game',
-      body: 'Put "has paid", "owns No Ads" and when No Ads runs out on /sync. These decide who can see an ad at all.',
-      unlocks: 'Players who could see ads versus players who did, and buyers kept apart in the ad numbers.', links: [['ads', 'Ads'], ['money', 'Money']] }
-  ];
-
-  // ---- events to add (from the event spec, in plain words; full field lists stay behind "deep") ----
-  var EVENTS = [
-    { group: 'Sessions and time', items: [
-      { ev: 'envelope', label: 'The envelope (on every event and /sync)', when: 'Attached to every event and every /sync.',
-        key: 'device id, session id, client time, time zone, US Eastern day, platform, build, language, ad eligibility, paid flag, test-device flag', answers: 'Time of day, platform splits on every chart, and keeping test devices out.',
-        full: 'uid (device), account_id if linked, sarge seat su, session_id, seq, client_ts (epoch ms), tz_offset_min, et_day_key, is_weekend_et, shell (ios/android/amazon/steam/web, from odfShell), os, app build + cv, lang, install_age_days, ad_eligibility (eligible/newbie/paid/noads/torch/steam/amazon/web), paid_ever, push_reachable, seated_or_rig flag' },
-      { ev: 'session_start', when: 'Each launch, and each return after more than 30 seconds away.',
-        key: 'cold or warm start, seconds away, what opened the game (a push, a reminder, a link)', answers: 'Sessions a day, time of day, and opens that came from a notification.',
-        full: 'cold/warm, away_s, source (organic / push:<k>:<push_id> / local_notif:<ev|bd|ga> / link:<fam>), screen landed on, campaign, lvl, starBank' },
-      { ev: 'session_end', when: 'When the game is hidden or closed. Builds on today\'s end; keep endx for crashes.',
-        key: 'screen, time on screen, battles this session, seconds since the last ad, last mode and level', answers: 'Session length, the quit screen and quitting right after an ad.',
-        full: 'screen (telScreen vocabulary incl. ad / ad+ / pitch / verdict:lose / play:*), fg_ms since session_start, battles_this_session, ms_since_last_ad, last_ad_placement, last_battle_id, last_mode, last_level' }
-    ] },
-    { group: 'First minutes', items: [
-      { ev: 'install', label: 'install (first open)', when: 'The very first launch on a device.',
-        key: 'where the player came from (organic, a friend\'s invite, an ad campaign), store, platform', answers: 'Which sources bring players who stay, and what each one is worth.',
-        full: 'install_source (organic / invite:<fam>:<inviter uid> / paid:<network>:<campaign>), join code, store, shell' },
-      { ev: 'ftue_step', when: 'Each first-run beat: title tap, intro, first battle, coach and Sarge\'s tour steps, name card, first Level 1 win.',
-        key: 'step, seconds since install, result', answers: 'Why so many stop at Level 1: the exact step where new players leave.',
-        full: 'step id, seconds since install, result (including whether the first Level 1 win was the "A LUCKY WIN!" mercy)' }
-    ] },
-    { group: 'Battles and modes', items: [
-      { ev: 'battle_start', when: 'Every fight, including Mom, the Toy Express, training and Survival, which send nothing or the wrong tag today.',
-        key: 'battle id, mode, level or rung, raid tier, team sizes, humans on each side, party, Globe country', answers: 'Solo vs player vs player vs friends, raids played, Globe battles, party size.',
-        full: 'battle_id, mode (camp|elite|third|coop_camp|park:<id>|raid:<id>|survival|mom|toyexpress|training|rival|nemesis|bank|bf_queue|bf_featured|bf_private|squad_vs|rk_live|rk_army|away|gauntlet_human|gauntlet_cpu|globe_live|globe_army|night_boss:<ice|bone|bbs>|night_pvp:<desert|tundra|rooftop>), pvp (bool), level/rung, raid tier (e/m/h/g/u), map, team size, humans on own side and on the opponent side, bots and bot tier, party/room id, host flag, opponent uid(s), globe cc, ad_shown_just_before' },
-      { ev: 'battle_end', when: 'Every result, retreat or walk-away, in every mode. Keep today\'s lv for continuity.',
-        key: 'battle id, outcome, why it ended, length, waves reached, try number at this level', answers: 'Stuck levels, fail rates for all 300 levels, every park and raid, and player vs player wins.',
-        full: 'battle_id, outcome (win/loss/retreat/void/forfeit/walkaway/mercy), reason (ko/time/sudden/edge/lives…), duration_ms, lives_left, wave reached, boss hp % at loss, phase, stars/xp earned, rating_before/after, attempt_n at this level' },
-      { ev: 'defeat_choice', when: 'The player\'s tap on the defeat screen, or quitting there.',
-        key: 'battle id, choice (TRY AGAIN, BACK TO HQ, Continue), whether the battlefield nudge showed, time on screen', answers: 'Quitting after a loss, and whether the loss nudge keeps players.',
-        full: 'battle_id, choice, nudge_shown, ms_on_screen' }
-    ] },
-    { group: 'Ads', items: [
-      { ev: 'ad_opportunity', when: 'Every time an ad could show, and every TV tap, whether or not an ad shows.',
-        key: 'placement, why no ad showed (new player, paid, No Ads, cap), result, money from the ad network', answers: 'Ads per player, who could see ads versus who did, real ad money per player.',
-        full: 'placement (retry/continue/picker_out/bf_again/camp_flow/tv), due (bool), skip_reason (newbie/paid/noads/torch/steam/amazon/web/cap/gap/not_due/placeholder), result (shown/no_fill/failed/completed/aborted), network, ad_unit, creative id, revenue_usd (from MAX onAdRevenuePaid, bridged), ms_on_screen, games_since_install, mode/level just played' },
-      { ev: 'rewarded_tv', when: 'Each step of the rewarded TV: shown, asked, ROLL IT or closed, finished, stars paid.',
-        key: 'step, stars paid, weekday or weekend', answers: 'How many choose to watch, and whether the daily TV brings players back.',
-        full: 'step, stars granted, weekday/weekend' }
-    ] },
-    { group: 'Money', items: [
-      { ev: 'offer', when: 'As today (the shop and No Ads offer events). Add a few fields.',
-        key: 'where the offer showed, product, local price, sale on or off, days since install, ads seen so far', answers: 'Offer to purchase, and whether the No Ads offer after an ad works.',
-        full: 'add door (pop/deny/chip/sale/aisle/pitch), sku, local price string + currency, sale_armed, days_since_install, ads_seen_lifetime' },
-      { ev: 'purchase', when: 'When a store purchase is credited. Refunds come from the stores\' server notices.',
-        key: 'transaction, product, store, price, money after the store\'s cut, test-purchase flag, refund time', answers: 'Spend per player, share who buy, and lifetime value without test buys or refunds.',
-        full: 'tx, sku, store (apple/google/amazon), price_local, currency, usd_net, sandbox/testflight flag (from receipt validation), door, sale bonus, refund_ts. Add Steam unit sales and Steam revenue from Steamworks reports.' },
-      { ev: 'currency_earn / currency_spend', when: 'Every time stars are earned or spent, and the BUY ANYTHING TICKET.',
-        key: 'where from or what for, amount, balance after', answers: 'Where stars come from and go, and "ran out of stars, then bought".',
-        full: 'source or sink (campaign purse, raid purse, TV, piggy, torch, gift, order, lake, purchase / garage, lab, crystal, outfit, dye, decor, piggy upgrade, ticket), amount, balance_after, item id' }
-    ] },
-    { group: 'Notifications', items: [
-      { ev: 'push_sent / push_open / push_dismiss', when: 'HQ sends a call-out or Globe push. The phone reports a tap or a swipe away.',
-        key: 'push id, kind, channel, who it went to, seconds left at the tap, delivered or failed', answers: 'Taps versus dismissals, for example on "CALLS YOU OUT… YOU HAVE 90 SECONDS".',
-        full: 'push_id, kind (rk/gl), channel (web/apns/fcm), target uid, challenger uid, secs in window, seconds_left at tap, delivered or error' },
-      { ev: 'local_notif', when: 'Reminders the game sets itself: night-event bell, the 45-second knock, the torch knock.',
-        key: 'which reminder, scheduled, shown, opened or cancelled', answers: 'Whether reminders bring players to night events and torch defence.',
-        full: 'lane (ev/bd/ga/gl/rk), action (scheduled/fired/opened/cancelled), event kind' },
-      { ev: 'knock_answer', when: 'A player answers or misses a call-out, Globe attack or torch challenge.',
-        key: 'kind, answer (DEFEND, LET MY ARMY FIGHT, none), where they answered, time to answer, rank kept or lost', answers: 'Whether call-outs bring players back inside the 90 seconds.',
-        full: 'kind (rk/gl/ga), knock id, answer (defend/let_army/none/missed), surface (push/in-app card/banner), ms_to_answer, then outcome and rank kept/lost' },
-      { ev: 'notif_permission', when: 'The phone\'s ask, the in-game "TURN ON NOTIFICATIONS?" prompt and the settings toggle.',
-        key: 'where it was asked, the answer, channel', answers: 'How many players can be reached, the base for every tap rate.',
-        full: 'surface, result, channel' }
-    ] },
-    { group: 'Social and daily loops', items: [
-      { ev: 'social', when: 'Invites shared and opened, friend codes, party join and leave, squads, blocks and reports.',
-        key: 'kind, who invited whom, new install or not, party size', answers: 'How many players each player brings, whether friends keep players, problem players.',
-        full: 'family (room/squad/coop/join/bond), inviter uid, invitee uid, fresh install, party size, place' },
-      { ev: 'daily_loop', when: 'MISSION BOARD order, piggy claim, Frozen Lake catch, advent door, first win of the day, night event joined.',
-        key: 'which loop, the day it counts for, streak, stars', answers: 'Which daily reasons to return bring players back the next day and the next week.',
-        full: 'loop id, ET or local day key, streak, stars' }
-    ] },
-    { group: 'Player profile', items: [
-      { ev: 'progress_milestone', when: 'Level up, feature unlocked, key or medal earned, pet found, code typed, name set, account linked.',
-        key: 'milestone, value, days since install, still on the given name', answers: 'How fast players progress, and who unlocked content with a code.',
-        full: 'milestone id, value, days since install, minted-name flag' },
-      { ev: '/sync additions', when: 'On the existing snapshot (at most every 15 seconds).',
-        key: 'platform, language, time zone, paid and No Ads status, stars, parks, raid tiers, Survival best, pets, medals, push channels', answers: 'Player lookup by name, and the inputs for lifetime value.',
-        full: 'shell, lang, tz_offset_min, paidEver, adFree status/expiry, starBank, parks incl. moon/turkey/nut, raid tier flags, survival best, pets owned, medals count, push channels' }
-    ] }
-  ];
-
-  // ---- traps in today's data ----
   var TRAPS = [
+    ['Numbers before Nov 25 are rougher.', 'Older visits are estimates from HQ: one visit per player per day, with no time of day and no last screen. Older battles were often tagged under the campaign or the battlefield, with no result. Ranges that reach back before Nov 25 mix the two.'],
+    ['Players count from their next visit.', 'A player who has not opened the game since Nov 25 has no platform, language or time zone yet, so they show under All platforms only.'],
     ['Level 1 cannot be lost the first time.', 'A first loss shows "A LUCKY WIN!" and is sent as a win. So the Level 1 wall is players quitting before or during their first battle, not players being beaten.'],
-    ['Tags hide some modes.', 'Survival Mode is sent as a campaign battle. Many fights share the battlefield tag (bf1 or bf2): rival and Nemesis, call-outs, away battles, the Gauntlet, the Globe and night PvP events. Mom and the Toy Express send no battle at all.'],
     ['The game runs on three day clocks.', 'The phone\'s own date drives the daily TV and the No Ads offer. US Eastern time drives night events, the MISSION BOARD and weekend double stars. HQ reports use UTC. The same moment can fall on different days.'],
     ['Names are not unique.', 'Many players keep the given "Commander" name. Look players up by device, and expect a name to match several devices.'],
-    ['Platform is unknown on player rows.', 'The 11/10 report shows every device as unknown. Until the game sends it, no number can be split by platform.'],
     ['Test purchases and refunds are mixed in.', 'Sandbox and TestFlight buys are not separated, and HQ never hears about refunds. Money totals can read slightly high.'],
-    ['Party raid and park results are posted as losses on purpose.', 'The game sends "won: false" for every party raid and park. Do not read them as defeats.'],
-    ['seat.html can write any device id.', 'The test page writes any device id, name and level into a phone\'s save, and that device then syncs as that player. Keep those devices and test rigs out of the numbers.'],
-    ['Events carry only the time HQ received them.', 'Events queued while a phone is offline arrive late, sometimes on a later day.']
+    ['Old party results read as losses.', 'Before Nov 25 the game sent "won: false" for every party raid and park on purpose. Since then each player\'s own game sends the real result.'],
+    ['seat.html can write any device id.', 'The test page writes any device id, name and level into a phone\'s save, and that device then syncs as that player. Keep those devices and test rigs out of the numbers.']
   ];
+
 
   // ---- which model blocks each page reads (for "Using the real report today") ----
   var PAGES = [
     { id: 'briefing', label: 'Briefing', need: ['headline', 'headline.sessionMedian'], report: 'partly', note: 'Value per new player, new players, retention, money. No session length yet.' },
     { id: 'stop', label: 'Where they stop', need: ['wall', 'fail', 'retention', 'stopDay', 'funnel', 'lastScreen'], report: 'partly', note: 'The level wall, level difficulty, when players stop, rolling retention. Not the first-minute steps or last screen.' },
     { id: 'modes', label: 'How they play', need: ['modes', 'raids', 'globe'], report: 'no', note: 'Battles are not split by mode in the report.' },
-    { id: 'time', label: 'When they play', need: ['time'], report: 'no', note: 'No event carries the player\'s local time.' },
+    { id: 'time', label: 'When they play', need: ['time'], report: 'no', note: 'The daily report has no time of day.' },
     { id: 'ads', label: 'Ads', need: ['ads', 'ads.quitAfterAd', 'ads.placements'], report: 'partly', note: 'Ads shown and ad money by day and platform. Not quitting after ads.' },
     { id: 'money', label: 'Money', need: ['money'], report: 'yes', note: 'Purchases, ad money, buyers and lifetime value.' },
     { id: 'notifs', label: 'Notifications', need: ['notifs'], report: 'no', note: 'Opens and swipe-aways are never reported. HQ could total the call-out answers it already stores.' },
     { id: 'players', label: 'Players', need: ['players'], report: 'no', note: 'The report has totals, not one row per player.' },
-    { id: 'ages', label: 'Who plays', need: ['ages'], report: 'no', note: 'GVT never asks a player\'s age.' }
+    { id: 'ages', label: 'Who plays', need: ['ages'], report: 'no', note: 'GVT does not ask players their age.' }
   ];
+  if (!G.AGES_ON) PAGES = PAGES.filter(function (p) { return p.id !== 'ages'; });
   function pick(M, path) { var v = M; path.split('.').forEach(function (k) { v = v == null ? null : v[k]; }); return v; }
   function filled(v) { return v != null && !(Array.isArray(v) && !v.length); }
 
@@ -5890,19 +5830,19 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   }
   var FIELDS = [
     ['File', 'v, source, asOf, day0, days', 'Format version (1), "hq", the day it was made, the first day, and how many days it covers. Every "d" below counts days from day0.', 'HQ'],
-    ['File', 'adRate', 'Average ad money per ad shown, by platform. Only needed until each ad\'s own money arrives.', 'AppLovin MAX report'],
-    ['Player', 'uid, name, plat, lang, tz', 'Device id, display name, platform, language, time zone in minutes from UTC.', 'envelope, /sync'],
-    ['Player', 'inst, push, ftue, camp', 'Install day, notifications on (1/0), furthest first-run step reached, highest campaign level won.', 'install, ftue_step, /sync'],
-    ['Player', 'noads, paid', 'Day No Ads was bought (-1 if never), has ever paid (1/0).', '/sync, purchase'],
-    ['Player', 'age', 'Age group: u13, 13-17, 18-24, 25-34, 35+ or unknown. Optional. Never a birthday.', 'not tracked yet'],
-    ['Session', 'p, d, m, s, src', 'Which player, which day, start minute on the player\'s clock (0-1439), seconds long, what opened it.', 'session_start, session_end'],
-    ['Session', 'end, adAgo', 'The screen when the game was closed, and seconds since the last ad (-1 if none).', 'session_end'],
-    ['Session', 'ai, ar, pl, qpl', 'Interstitial and rewarded ads shown, interstitials by placement, the placement of the ad they quit on.', 'ad_opportunity'],
-    ['Battle', 'k, sub, lv, t', 'Mode key, park or raid, level or rung, raid tier.', 'battle_start'],
-    ['Battle', 'o, s, h', 'Result (w win, l loss, r retreat), seconds long, humans on the player\'s side.', 'battle_end'],
-    ['Purchase', 'p, d, sku, usd', 'Which player, which day, product, money after the store\'s cut.', 'purchase'],
-    ['Notification', 'p, d, m, k, r', 'Which player, day, minute, kind, and open, dismiss or ignore.', 'push_sent, push_open, push_dismiss'],
-    ['Notification', 'os, a, w, lapsed', 'Seconds to open, the answer (defend, army, none), whether it went their way, sent to a player who had stopped.', 'knock_answer']
+    ['File', 'adRate', 'Average ad money per ad shown, by platform. Only needed until each ad\'s own money arrives.', 'AppLovin MAX report (an average until the apps pass each ad\'s money)'],
+    ['Player', 'uid, name, plat, lang, tz', 'Device id, display name, platform, language, time zone in minutes from UTC.', 'wpf, the profile sent at every visit'],
+    ['Player', 'inst, push, ftue, camp', 'Install day, notifications on (1/0), furthest first-run step reached, highest campaign level won.', 'HQ, wft (first-run steps), wpf'],
+    ['Player', 'noads, paid', 'Day No Ads was bought (-1 if never), has ever paid (1/0).', 'wpf, the purchase book'],
+    ['Player', 'age', 'Age group: u13, 13-17, 18-24, 25-34, 35+ or unknown. Optional. Never a birthday.', 'not asked'],
+    ['Session', 'p, d, m, s, src', 'Which player, which day, start minute on the player\'s clock (0-1439), seconds long, what opened it.', 'wss (visit start), wse (visit end)'],
+    ['Session', 'end, adAgo', 'The screen when the game was closed, and seconds since the last ad (-1 if none).', 'wse'],
+    ['Session', 'ai, ar, pl, qpl', 'Interstitial and rewarded ads shown, interstitials by placement, the placement of the ad they quit on.', 'wad (every ad moment), wse'],
+    ['Battle', 'k, sub, lv, t', 'Mode key, park or raid, level or rung, raid tier.', 'wbs (battle start)'],
+    ['Battle', 'o, s, h', 'Result (w win, l loss, r retreat), seconds long, humans on the player\'s side.', 'wbe (battle end)'],
+    ['Purchase', 'p, d, sku, usd', 'Which player, which day, product, money after the store\'s cut.', 'the purchase book (/iap/note), wbuy'],
+    ['Notification', 'p, d, m, k, r', 'Which player, day, minute, kind, and open, dismiss or ignore.', 'wno (the game\'s own reminders), HQ\'s call-out log'],
+    ['Notification', 'os, a, w, lapsed', 'Seconds to open, the answer (defend, army, none), whether it went their way, sent to a player who had stopped.', 'wno, HQ\'s call-out log']
   ];
 
   var STYLE = [
@@ -5959,25 +5899,24 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     covKeys.forEach(function (k) { var l = COV[k].level; if (count[l] != null) count[l]++; });
     var total = covKeys.length;
     var noNames = covKeys.filter(function (k) { return COV[k].level === 'no'; }).map(function (k) { return COVNAME[k] || k; });
-    var noHQ = WINS.filter(function (w) { return w.effort === 'No game change'; }).length;
     function joinList(a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
     function words(n) { return ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][n] || String(n); }
     function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-    main.appendChild(ui.secHead({ eyebrow: 'For Wyatt · and anyone asking where a number comes from', title: 'Tracking plan',
-      question: 'What does the game need to send so every page here runs on real players?',
+    main.appendChild(ui.secHead({ eyebrow: 'Where every number comes from', title: 'What the game tracks',
+      question: 'What the game sends to HQ since Nov 25, and what is still missing.',
       coverage: { level: count.no || count.partly ? 'partly' : 'yes', note: count.yes + ' of ' + total + ' questions on this site are fully tracked today, ' + count.partly + ' in part.' } }));
 
     // ---- the answer ----
     var rows = [
-      { sev: count.yes * 2 >= total ? 'good' : 'warning', html: 'HQ already records <b>' + count.yes + ' of the ' + total + '</b> questions this site asks, and <b>' + count.partly + ' more in part</b>.',
-        sub: 'Fully tracked today: ' + esc(joinList(covKeys.filter(function (k) { return COV[k].level === 'yes'; }).map(function (k) { return COVNAME[k] || k; }))) + '.' }
+      { sev: 'good', html: '<b>Since Nov 25 the game sends what this site needs.</b> Every visit, every battle in every mode, the first-run steps, ad moments, notifications, purchases and each player\'s platform.',
+        sub: 'Game v34.75 and HQ v185. Each player counts from their next visit. Players who have not come back since then keep rougher numbers: one visit a day, no time of day, no platform.' },
+      { sev: count.partly ? 'warning' : 'good', html: '<b>' + count.yes + ' of the ' + total + '</b> questions this site asks are fully tracked' + (count.partly ? ', and <b>' + count.partly + ' in part</b>' : '') + '.',
+        sub: count.partly ? 'In part: ' + esc(joinList(covKeys.filter(function (k) { return COV[k].level === 'partly'; }).map(function (k) { return COVNAME[k] || k; }))) + '. The "Still missing" column below says what is left and why.' : '' }
     ];
-    if (count.no) rows.push({ sev: 'critical', html: '<b>' + cap(words(count.no)) + ' questions have no data yet:</b> ' + esc(joinList(noNames)) + '.',
-      sub: 'Each needs a new event from the game. They are listed under "Events to add".' });
-    rows.push({ sev: 'good', html: '<b>' + cap(words(WINS.length)) + ' quick wins</b> need little game work. ' + cap(words(noHQ)) + ' of them are HQ changes only.',
-      sub: 'Start by totalling the quit screens and the call-out answers HQ already receives. That fills the last-screen and quit-after-ad charts, and the call-outs defended in time.' });
-    rows.push({ sev: 'info', html: 'The War Room reads one file: <b>GVT Player Export v1</b>. When HQ sends it, every page switches to real players with no redesign.' });
+    if (count.no) rows.push({ sev: 'info', html: '<b>' + cap(words(count.no)) + (count.no === 1 ? ' question has' : ' questions have') + ' no source:</b> ' + esc(joinList(noNames)) + '.',
+      sub: 'GVT does not ask players their age, and the team decided not to ask.' });
+    rows.push({ sev: 'info', html: 'The War Room reads one file from HQ, <b>GVT Player Export v1</b>, rebuilt every 15 minutes. Paste its link once on the <a href="#data">Real data</a> page.' });
     if (ctx.isReport) {
       var lit = PAGES.map(function (p) { var got = p.need.filter(function (k) { return filled(pick(M, k)); }).length; return got === p.need.length ? 'yes' : got ? 'partly' : 'no'; });
       var nYes = lit.filter(function (x) { return x === 'yes'; }).length, nPart = lit.filter(function (x) { return x === 'partly'; }).length;
@@ -5992,66 +5931,35 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
       return { q: n.q, page: n.page, pageLabel: n.pageLabel, level: lvl || 'no', order: { yes: 0, partly: 1, no: 2 }[lvl || 'no'],
         today: n.today || (COV[n.cov] || {}).note || '', add: n.add };
     });
-    var cNeeds = ui.card({ title: 'What each page needs', howto: 'One row per question this site answers. "In HQ today" says whether HQ records it now. The last column is what the game or HQ would add.' });
+    var cNeeds = ui.card({ title: 'Question by question', howto: 'One row per question this site answers. "In HQ today" says whether HQ records it now. The last column says what is still missing, if anything.' });
     var splitParts = [
       { label: 'Tracked in HQ', v: count.yes, color: 'var(--good)' },
       { label: 'Partly tracked', v: count.partly, color: 'var(--warn)' },
-      { label: 'Not tracked yet', v: count.no, color: 'var(--crit)' }
+      { label: 'Not tracked', v: count.no, color: 'var(--crit)' }
     ];
     cNeeds.body.appendChild(h('h3', { class: 'sub', style: { 'margin-top': '10px' }, text: 'The ' + total + ' questions, by what HQ records today' }));
     cNeeds.body.appendChild(ui.withTable(ui.split({ parts: splitParts, label: count.yes + ' tracked, ' + count.partly + ' partly, ' + count.no + ' not tracked', fmt: function (v) { return v + ' of ' + total + ' questions'; } }),
       function () { return ui.table({ sortable: false, cols: [{ key: 'label', label: 'In HQ today' }, { key: 'v', label: 'Questions', n: true }, { key: 'share', label: 'Share', n: true, value: function (r) { return total ? r.v * 100 / total : null; }, fmt: function (v) { return f.pct(v); } }], rows: splitParts }); }));
-    var tblNeeds = ui.table({ sortable: false, caption: 'What each page needs',
+    var tblNeeds = ui.table({ sortable: false, caption: 'Question by question',
       cols: [
         { key: 'q', label: 'Question', fmt: function (v, r) { return h('div', null, h('b', { text: v }), h('div', { style: { 'font-size': 'var(--fs-xs)', color: 'var(--muted)' } }, r.page ? h('a', { href: '#' + r.page, text: r.pageLabel }) : r.pageLabel)); } },
         { key: 'level', label: 'In HQ today', fmt: function (v) { var c = COVTXT[v] || COVTXT.no; return ui.pill(c[0], c[1]); } },
-        { key: 'today', label: 'What exists today', fmt: function (v) { return esc(v); } },
-        { key: 'add', label: 'What to add', fmt: function (v) { return v; } }
+        { key: 'today', label: 'What HQ has', fmt: function (v) { return esc(v); } },
+        { key: 'add', label: 'Still missing', fmt: function (v) { return v; } }
       ], rows: needRows });
     var tEl = tblNeeds.querySelector('table'); tEl.classList.add('stack');
-    var heads = ['Question', 'In HQ today', 'What exists today', 'What to add'];
+    var heads = ['Question', 'In HQ today', 'What HQ has', 'Still missing'];
     tEl.querySelectorAll('tbody tr').forEach(function (tr) { tr.querySelectorAll('td').forEach(function (td, i) { td.setAttribute('data-label', heads[i]); if (i === 0) td.style.minWidth = '11em'; if (i >= 2) td.style.minWidth = '16em'; }); });
     cNeeds.body.appendChild(h('h3', { class: 'sub', text: 'Question by question' }));
     cNeeds.body.appendChild(tblNeeds);
     var notYet = needRows.filter(function (r) { return r.level === 'no'; }), partRows = needRows.filter(function (r) { return r.level === 'partly'; });
-    cNeeds.appendChild(h('div', { class: 'means', html: 'One row per question. <b>' + notYet.length + '</b> have no data in HQ yet and <b>' + partRows.length + '</b> are partly covered. ' +
-      'Most of the gap closes with four events: <code>session_start</code>, <code>session_end</code>, <code>battle_end</code> and <code>ftue_step</code>, plus the envelope on every event.' }));
+    cNeeds.appendChild(h('div', { class: 'means', html: 'Most rows say <b>Nothing</b>. What is left needs a new store build (ad money, swiped-away notifications), a change at HQ (refunds), or a decision (ages).' }));
     main.appendChild(cNeeds);
 
-    // ---- quick wins ----
-    var cWins = ui.card({ title: 'Quick wins: little or no game change', howto: 'Ordered by effort. "No game change" means HQ can do it alone with what the game already sends.',
-      children: h('div', { class: 'wins' }, WINS.map(function (w) {
-        return h('div', { class: 'win' },
-          h('div', { class: 'tags' }, ui.pill(w.effort === 'No game change' ? 'good' : 'info', w.effort)),
-          h('h3', { text: w.title }),
-          h('p', { html: w.body }),
-          h('p', { html: '<b>Fills:</b> ' + w.unlocks }),
-          h('p', null, w.links.map(function (l, j) { return [j ? ' · ' : '', h('a', { href: '#' + l[0], text: l[1] + ' →' })]; })));
-      })),
-      means: '<b>' + noHQ + ' of the ' + WINS.length + '</b> quick wins are HQ-only and need no new game build. The other ' + (WINS.length - noHQ) + ' are one or two fields each on messages the game already sends.' });
-    main.appendChild(cWins);
-
-    // ---- events to add ----
-    var nEv = 0; EVENTS.forEach(function (g) { nEv += g.items.length; });
-    main.appendChild(h('h2', { class: 'eyebrow', style: { 'margin-top': '6px' }, text: 'Events to add · ' + nEv + ' in ' + EVENTS.length + ' groups' }));
-    main.appendChild(h('p', { class: 'prose', html: 'Each event lists when it fires, the fields that matter most and the question it answers. Event names are shown in <code>code</code> so they can be searched for. The full field list for each group is under "All fields".' }));
-    main.appendChild(h('div', { class: 'grid' }, EVENTS.map(function (g) {
-      var c = ui.card({ title: g.group, children: h('ul', { class: 'evs' }, g.items.map(function (e) {
-        return h('li', null,
-          h('div', { class: 'nm' }, h('code', { text: e.label ? e.label : e.ev })),
-          h('span', null, h('b', { text: 'When: ' }), e.when),
-          h('span', null, h('b', { text: 'Key fields: ' }), e.key),
-          h('span', null, h('b', { text: 'Answers: ' }), e.answers));
-      })) });
-      c.appendChild(h('details', { class: 'deep' }, h('summary', { text: 'All fields (' + g.items.length + ' event' + (g.items.length > 1 ? 's' : '') + ')' }),
-        h('ul', { class: 'full' }, g.items.map(function (e) { return h('li', null, h('code', { text: e.ev }), ' ', e.full); }))));
-      return c;
-    })));
-
     // ---- traps + using the report, side by side on wide screens ----
-    var cTraps = ui.card({ title: 'Traps to know in today\'s data', howto: 'Things in the game or in HQ that can make a number look wrong. Read these before trusting a chart built on today\'s data.',
+    var cTraps = ui.card({ title: 'Traps to know in the data', howto: 'Things in the game or in HQ that can make a number look wrong. Read these before trusting a chart.',
       children: h('ol', { class: 'traps' }, TRAPS.map(function (t) { return h('li', null, h('b', { text: t[0] }), t[1]); })),
-      means: 'The biggest one for the walls: <b>Level 1 is lost by leaving, not by losing.</b> Fix it with <code>ftue_step</code>, not by making Level 1 easier.' });
+      means: 'The biggest one for the walls: <b>Level 1 is lost by leaving, not by losing.</b> The first-run steps on <a href="#stop">Where they stop</a> show where they leave.' });
 
     var cRep = ui.card({ title: 'Using the real report today', howto: 'Wyatt\'s GVT Daily Report already holds many real numbers. You can read it here now.' });
     cRep.body.appendChild(h('ol', { class: 'steps' },
@@ -6076,12 +5984,12 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     // ---- the data format ----
     var cFmt = ui.card({ title: 'The data format: GVT Player Export v1', howto: 'The one file the War Room reads. The example data on this site is built in exactly this shape.' });
     cFmt.body.appendChild(h('p', { class: 'prose', style: { 'margin-top': '8px' }, html: 'One JSON file with four lists: <b>players</b> (one row per device), <b>sessions</b> (each with its <b>battles</b>), <b>buys</b> (purchases) and <b>notifs</b> (notifications). Rows point to their player by position in the players list (<code>p</code>), and days count from <code>day0</code> (<code>d</code>).' }));
-    cFmt.body.appendChild(h('p', { class: 'prose', html: 'Suggested delivery: HQ serves it the same way as <code>kpi.json</code>, behind the admin key carried in the link, for example at <code>/gvt/export.json</code>. The War Room would then load that file in place of the example data. Every page already reads this shape, so nothing else changes.' }));
+    cFmt.body.appendChild(h('p', { class: 'prose', html: 'HQ serves it since Nov 24 at <code>/gvt/export.json</code>, behind a key carried in the link, and rebuilds it every 15 minutes. The War Room loads it in place of the example data once the link is pasted on the <a href="#data">Real data</a> page.' }));
     cFmt.body.appendChild(h('h3', { class: 'sub', text: 'A tiny made-up export: one player, two sessions, one purchase, one notification' }));
     cFmt.body.appendChild(h('div', { class: 'tw', tabindex: '0', 'aria-label': 'Example export file, scrolls sideways' }, h('pre', null, h('code', { text: sampleJson() }))));
     cFmt.body.appendChild(h('details', { class: 'deep' }, h('summary', { text: 'What every field means, and which event fills it' }),
       ui.table({ sortable: false, caption: 'Export fields', cols: [
-        { key: 0, label: 'List' }, { key: 1, label: 'Fields', fmt: function (v) { return '<code>' + esc(v) + '</code>'; } }, { key: 2, label: 'Meaning' }, { key: 3, label: 'Filled by' }
+        { key: 0, label: 'List' }, { key: 1, label: 'Fields', fmt: function (v) { return '<code>' + esc(v) + '</code>'; } }, { key: 2, label: 'Meaning' }, { key: 3, label: 'Sent by' }
       ], rows: FIELDS })));
     cFmt.appendChild(h('div', { class: 'means', html: 'Mode keys (<code>k</code>), screens (<code>end</code>), products (<code>sku</code>) and notification kinds (<code>k</code>) use the same short names the game uses today, for example <code>' +
       esc(CAT.MODES.slice(0, 3).map(function (m) { return m.key; }).join(', ')) + '</code> for modes and <code>' + esc(CAT.SKUS[0].key) + '</code> for the Starter Pack.' }));
@@ -6117,7 +6025,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     main.appendChild(cDefs);
   }
 
-  G.sections.push({ id: 'plan', nav: 'Tracking plan', title: 'Tracking plan', question: 'What does the game need to send so every page here runs on real players?', area: null, render: render });
+  G.sections.push({ id: 'plan', nav: 'What we track', title: 'What the game tracks', question: 'What the game sends to HQ since Nov 25, and what is still missing.', area: null, render: render });
 })();
 
 /* ---- app.js ---- */
@@ -6133,7 +6041,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
   var goodFilters = { range: 30, platform: 'all', age: 'all' }; // the last filters that drew without an error
   var REPORT_FIXED = 'The daily report covers fixed windows, so the range, platform and age filters are off.';
 
-  function sections() { return ORDER.map(function (id) { return G.sections.filter(function (s) { return s.id === id; })[0]; }).filter(Boolean); }
+  function sections() { return ORDER.filter(function (id) { return id !== 'ages' || G.AGES_ON; }).map(function (id) { return G.sections.filter(function (s) { return s.id === id; })[0]; }).filter(Boolean); }
   function secById(id) { return sections().filter(function (s) { return s.id === id; })[0] || null; }
   function route() { var m = (location.hash || '').replace(/^#\/?/, '').split('/'); var a = m.slice(1).join('/'); try { a = decodeURIComponent(a); } catch (e) { } return { id: m[0] || 'briefing', arg: a || null }; }
   function go(id, arg) { location.hash = '#' + id + (arg ? '/' + encodeURIComponent(arg) : ''); }
@@ -6275,7 +6183,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     return h('div', { class: 'bar' }, h('div', { class: 'bar-in' },
       h('a', { class: 'mark', href: '#briefing', 'aria-label': 'GVT War Room, back to the briefing' }, h('b', { html: 'GVT <span>War Room</span>' }), h('i', { text: 'Player analytics' })),
       srcChip(false), teamChip(),
-      h('div', { class: 'controls' }, seg, plat, ageSel, srcBtn, file)));
+      h('div', { class: 'controls' }, seg, plat, G.AGES_ON ? ageSel : null, srcBtn, file)));
   }
   // which data is on screen, in two words (the bar and the phone tab strip both carry it, so it never scrolls away)
   function srcKind() { return state.source === 'report' ? 'report' : state.M && state.M.source && state.M.source.kind === 'hq' ? 'hq' : 'demo'; }
@@ -6347,6 +6255,7 @@ code { font: 500 .92em var(--mono); background: var(--surface-2); padding: 1px 5
     var a = document.activeElement, fid = a && a !== document.body && a.id ? a.id : null, sel = null;
     if (fid && a.tagName === 'INPUT') { try { sel = [a.selectionStart, a.selectionEnd]; } catch (e) { sel = null; } }
     var prevM = state.M;
+    if (!G.AGES_ON) state.filters.age = 'all';
     try { compute(); goodFilters = { range: state.filters.range, platform: state.filters.platform, age: state.filters.age }; }
     catch (err) {
       state.M = prevM; state.filters.range = goodFilters.range; state.filters.platform = goodFilters.platform; state.filters.age = goodFilters.age;
